@@ -93,6 +93,11 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
       "name": "Ribas",
       "image": "lib/assets/equipe/ribas.png",
       "page": "RibasPage"
+    },
+    {
+      "name": "Andrey",
+      "image": "lib/assets/equipe/andrey.png",
+      "page": "AndreyPage"
     }
   ];
 
@@ -105,7 +110,11 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
   ];
 
   final List<Map<String, String>> ilustracoes = [
-    {"name": "Richard", "image": "lib/assets/equipe/richard.jpg", "page": "RichardPage"}
+    {
+      "name": "Richard",
+      "image": "lib/assets/equipe/richard.jpg",
+      "page": "RichardPage"
+    }
   ];
 
   @override
@@ -163,7 +172,6 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
-                    height: screenHeight * 0.12,
                     child: Row(
                       children: [
                         Padding(
@@ -171,7 +179,7 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
                           child: Text(
                             'Nossa Equipe',
                             style: GoogleFonts.poppins(
-                              fontSize: screenWidth * 0.09,
+                              fontSize: screenWidth * 0.08,
                               fontWeight: FontWeight.bold,
                               color: const Color.fromARGB(255, 14, 56, 70),
                             ),
@@ -189,9 +197,9 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
                       const Color.fromARGB(255, 112, 70, 132)),
                   _buildProjectSection('Desenvolvimento Mobile',
                       desenvolvimentoMobile, const Color(0xFF0E414F)),
-                  _buildProjectSection('Desenvolvimento Web',
+                  _buildProjectSection('Desenvolvimento Frontend web',
                       desenvolvimentoWeb, const Color(0xFF136A9F)),
-                  _buildProjectSection('Desenvolvimento back-end',
+                  _buildProjectSection('Desenvolvimento backend',
                       desenvolvimentoBackend, const Color(0xFFF26A2E)),
                   _buildProjectSection(
                       'Ilustrações', ilustracoes, const Color(0xFF830000)),
@@ -212,11 +220,11 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-         padding: EdgeInsets.all(screenWidth * 0.05),
+          padding: EdgeInsets.all(screenWidth * 0.05),
           child: Text(
             title,
             style: GoogleFonts.inter(
-              fontSize: screenWidth * 0.06,
+              fontSize: screenWidth * 0.056,
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
