@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 
 class AndreyPage extends StatelessWidget {
   final String githubUrl = "https://github.com/andreyviana";
-  final String linkedinUrl ="https://www.linkedin.com/in/andreyviana1/";
+  final String linkedinUrl = "https://www.linkedin.com/in/andreyviana1/";
   final String email = "andreyviana125@gmail.com";
 
   const AndreyPage({super.key});
@@ -18,7 +18,8 @@ class AndreyPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: AppBar2_page(screenWidth: screenWidth, destinationPage: const NossaEquipePage()),
+      appBar: AppBar2_page(
+          screenWidth: screenWidth, destinationPage: const NossaEquipePage()),
       body: ListView(
         children: [
           Padding(
@@ -84,7 +85,7 @@ class AndreyPage extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                       child: Text(
-                        'Planejamento e desenvolvimento do back-end',
+                        'Planejamento e desenvolvimento do Front-web/back-end',
                         style: GoogleFonts.inter(
                           fontSize: screenWidth * 0.048,
                           fontWeight: FontWeight.bold,
@@ -122,23 +123,21 @@ class AndreyPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       InkWell(
-                        onTap: () async {
-                          _launchURL(githubUrl);
-                        },
-                        child: Image.asset(
-                          'lib/assets/github.png',
-                          width: screenWidth * 0.1,
-                        )
-                      ),
+                          onTap: () async {
+                            _launchURL(githubUrl);
+                          },
+                          child: Image.asset(
+                            'lib/assets/github.png',
+                            width: screenWidth * 0.1,
+                          )),
                       InkWell(
-                        onTap: () async {
-                          _launchURL(linkedinUrl);
-                        },
-                        child: Image.asset(
-                          'lib/assets/linkedin.png',
-                          width: screenWidth * 0.1,
-                        )
-                      ),
+                          onTap: () async {
+                            _launchURL(linkedinUrl);
+                          },
+                          child: Image.asset(
+                            'lib/assets/linkedin.png',
+                            width: screenWidth * 0.1,
+                          )),
                       IconButton(
                         icon: Icon(Icons.email,
                             color: Colors.orange, size: screenWidth * 0.1),
@@ -155,7 +154,7 @@ class AndreyPage extends StatelessWidget {
     );
   }
 
-Future<void> _launchURL(String url) async {
+  Future<void> _launchURL(String url) async {
     if (url.isEmpty) {
       print('URL is empty');
       return;
