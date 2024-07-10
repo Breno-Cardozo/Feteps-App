@@ -202,16 +202,21 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
                   ),
                 ],
               ),
+              SizedBox(height: screenHeight * 0.04),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     _buildTextField(screenWidth, screenHeight,
                         'Nome da Instituição:', _nomeController),
+                    SizedBox(height: screenHeight * 0.02),
                     _buildTextField(screenWidth, screenHeight,
                         'Campus (Opcional):', _campusController),
+                    SizedBox(height: screenHeight * 0.02),
                     _buildDropdownInstitutionType(screenWidth, screenHeight),
+                    SizedBox(height: screenHeight * 0.02),
                     _buildDropdownEstado(screenWidth, screenHeight),
+                    SizedBox(height: screenHeight * 0.02),
                     _buildDropdownCidade(screenWidth, screenHeight),
                     Padding(
                       padding:
@@ -279,185 +284,173 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
 
   Widget _buildTextField(double screenWidth, double screenHeight, String label,
       TextEditingController controller) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: screenHeight * 0.015),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: screenWidth * 0.8,
-            child: TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                labelText: label,
-                labelStyle: GoogleFonts.roboto(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.04,
-                ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: screenWidth * 0.8,
+          child: TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: label,
+              labelStyle: GoogleFonts.roboto(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.04,
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildDropdownInstitutionType(
       double screenWidth, double screenHeight) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: screenHeight * 0.015),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: screenWidth * 0.8,
-            child: DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Tipo da instituição:',
-                labelStyle: GoogleFonts.roboto(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.04,
-                ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: screenWidth * 0.8,
+          child: DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Tipo da instituição:',
+              labelStyle: GoogleFonts.roboto(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.04,
               ),
-              icon: const Icon(Icons.arrow_drop_down_sharp),
-              value: _selectedInstitutionType,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedInstitutionType = newValue;
-                });
-              },
-              items: ['URBANA', 'RURAL'].map((String type) {
-                return DropdownMenuItem<String>(
-                  value: type,
-                  child: Text(type),
-                );
-              }).toList(),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, selecione o tipo da instituição.';
-                }
-                return null;
-              },
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
             ),
+            icon: const Icon(Icons.arrow_drop_down_sharp),
+            value: _selectedInstitutionType,
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedInstitutionType = newValue;
+              });
+            },
+            items: ['URBANA', 'RURAL'].map((String type) {
+              return DropdownMenuItem<String>(
+                value: type,
+                child: Text(type),
+              );
+            }).toList(),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, selecione o tipo da instituição.';
+              }
+              return null;
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildDropdownEstado(double screenWidth, double screenHeight) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: screenHeight * 0.015),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: screenWidth * 0.8,
-            child: DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Estado:',
-                labelStyle: GoogleFonts.roboto(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.04,
-                ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: screenWidth * 0.8,
+          child: DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Estado:',
+              labelStyle: GoogleFonts.roboto(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.04,
               ),
-              icon: const Icon(Icons.arrow_drop_down_sharp),
-              value: _selectedEstado,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedEstado = newValue;
-                  _estadoController.text = newValue!;
-                  _loadCidades(newValue);
-                });
-              },
-              items: _estados.map((estado) {
-                return DropdownMenuItem<String>(
-                  value: estado.id,
-                  child: Text(estado.nome),
-                );
-              }).toList(),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, selecione um estado.';
-                }
-                return null;
-              },
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
             ),
+            icon: const Icon(Icons.arrow_drop_down_sharp),
+            value: _selectedEstado,
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedEstado = newValue;
+                _estadoController.text = newValue!;
+                _loadCidades(newValue);
+              });
+            },
+            items: _estados.map((estado) {
+              return DropdownMenuItem<String>(
+                value: estado.id,
+                child: Text(estado.nome),
+              );
+            }).toList(),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, selecione um estado.';
+              }
+              return null;
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildDropdownCidade(double screenWidth, double screenHeight) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: screenHeight * 0.015),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: screenWidth * 0.8,
-            child: DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Cidade:',
-                labelStyle: GoogleFonts.roboto(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.04,
-                ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: screenWidth * 0.8,
+          child: DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Cidade:',
+              labelStyle: GoogleFonts.roboto(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.04,
               ),
-              icon: const Icon(Icons.arrow_drop_down_sharp),
-              value: _cidadeController.text.isNotEmpty
-                  ? _cidadeController.text
-                  : null,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _cidadeController.text = newValue!;
-                });
-              },
-              items: _cidadesDoEstado.map((cidade) {
-                return DropdownMenuItem<String>(
-                  value: cidade.nome,
-                  child: Text(cidade.nome),
-                );
-              }).toList(),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, selecione uma cidade.';
-                }
-                return null;
-              },
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
             ),
+            icon: const Icon(Icons.arrow_drop_down_sharp),
+            value: _cidadeController.text.isNotEmpty
+                ? _cidadeController.text
+                : null,
+            onChanged: (String? newValue) {
+              setState(() {
+                _cidadeController.text = newValue!;
+              });
+            },
+            items: _cidadesDoEstado.map((cidade) {
+              return DropdownMenuItem<String>(
+                value: cidade.nome,
+                child: Text(cidade.nome),
+              );
+            }).toList(),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, selecione uma cidade.';
+              }
+              return null;
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
