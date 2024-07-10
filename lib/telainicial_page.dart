@@ -87,7 +87,7 @@ class _TelaInicialPageState extends State<TelaInicialPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Bem vindo ao aplicativo da Feira \n Tecnologica do Centro Paula \nSouza!",
+                    "Bem vindo ao aplicativo da\nFeira Tecnologica do\nCentro Paula Souza!",
                     style: GoogleFonts.roboto(
                       fontSize: MediaQuery.of(context).size.width * 0.052,
                       color: Colors.black,
