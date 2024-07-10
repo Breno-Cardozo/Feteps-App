@@ -72,7 +72,8 @@ class _VotarPageState extends State<VotarPage> {
   }
 
   Future<void> enviarVoto(int rating) async {
-    final String apiUrl = GlobalPageState.Url + '/appfeteps/pages/Project/update.php';
+    final String apiUrl =
+        GlobalPageState.Url + '/appfeteps/pages/Project/update.php';
     final String idProjeto = widget.project['id']?.toString() ?? 'Não tem id';
 
     Map<String, String> headers = {
@@ -126,8 +127,10 @@ class _VotarPageState extends State<VotarPage> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final String? bannerUrl = widget.project['banner'];
-    String odsId = widget.project['ods']['id_ods']?.toString() ?? 'ID ODS Não Disponível';
-    String nameOds = widget.project['ods']['name_ods']?.toString() ?? 'Nome ODS Não Disponível';
+    String odsId =
+        widget.project['ods']['id_ods']?.toString() ?? 'ID ODS Não Disponível';
+    String nameOds = widget.project['ods']['name_ods']?.toString() ??
+        'Nome ODS Não Disponível';
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -219,7 +222,7 @@ class _VotarPageState extends State<VotarPage> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             Text(
@@ -232,11 +235,13 @@ class _VotarPageState extends State<VotarPage> {
             ),
             const SizedBox(height: 10),
             Text(
-              widget.project['project_abstract'] ?? 'Lorem ipsum dolor sit amet...',
+              widget.project['project_abstract'] ??
+                  'Lorem ipsum dolor sit amet...',
               style: GoogleFonts.inter(
                 fontSize: screenWidth * 0.042,
                 color: Colors.black,
               ),
+              textAlign: TextAlign.justify,
             ),
             const Divider(
               color: Colors.black,
