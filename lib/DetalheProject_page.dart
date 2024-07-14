@@ -163,7 +163,7 @@ class DetalheProjectPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              project['project_abstract'] ?? 'Lorem ipsum dolor sit amet...',
+              project['project_abstract'] ?? 'Este projeto não possuí um resumo.',
               style: GoogleFonts.inter(
                 fontSize: screenWidth * 0.042,
                 color: Colors.black,
