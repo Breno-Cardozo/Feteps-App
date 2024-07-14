@@ -197,9 +197,9 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
                       const Color.fromARGB(255, 112, 70, 132)),
                   _buildProjectSection('Desenvolvimento Mobile',
                       desenvolvimentoMobile, const Color(0xFF0E414F)),
-                  _buildProjectSection('Desenvolvimento Frontend web',
+                  _buildProjectSection('Desenvolvimento Frontend Web',
                       desenvolvimentoWeb, const Color(0xFF136A9F)),
-                  _buildProjectSection('Desenvolvimento backend',
+                  _buildProjectSection('Desenvolvimento Backend',
                       desenvolvimentoBackend, const Color(0xFFF26A2E)),
                   _buildProjectSection(
                       'Ilustrações', ilustracoes, const Color(0xFF830000)),
