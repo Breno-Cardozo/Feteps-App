@@ -20,88 +20,92 @@ class SobreNosPage extends StatefulWidget {
 class _SobreNosPageState extends State<SobreNosPage> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-       ),
+        theme: ThemeData(),
         home: Scaffold(
-          appBar: AppBar1_page(screenWidth:  MediaQuery.of(context).size.width * 1.0, destinationPage: SobrePage()),
+          appBar: AppBar1_page(
+              screenWidth: screenWidth * 1.0, destinationPage: SobrePage()),
           endDrawer: MenuPage(),
           body: Column(children: [
             SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'lib/assets/banner2.png',
-                        width: MediaQuery.of(context).size.width * 1.0,
-                      )
-                    ],
-                  ),
-                ),
+              height: screenHeight * 0.3,
+              child: Row(
+                children: [
+                  Image.asset(
+                    'lib/assets/banner2.png',
+                    width: screenWidth * 1.0,
+                  )
+                ],
+              ),
+            ),
             Expanded(
               child: ListView(
                 scrollDirection: Axis.vertical,
                 children: [
-                  SizedBox(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.05,
-                      margin: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.05,
-                        vertical: MediaQuery.of(context).size.height * 0.01,
+                  Container(
+                    height: screenHeight * 0.05,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.01,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                            color: Colors.black38,
+                            width: 1), // Define a linha de borda inferior
                       ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                              color: Colors.black38,
-                              width: 1), // Define a linha de borda inferior
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Sobre Nós',
-                            style: GoogleFonts.poppins(
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.064,
-                              color: const Color(0xFF0E414F),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        ],
-                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Sobre Nós',
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.064,
+                            color: const Color(0xFF0E414F),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
                     ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Somos um grupo de alunos\ndedicados  e inovadores que uniram\nsuas paixões pela tecnologia e\neducação. Movidos pelo desejo de\nfazer a diferença, \ndesenvolvemos um aplicativo\npara a Feira Tecnológica\ndo Estado de São Paulo (Feteps).\nNossa jornada foi marcada por colaboração,\naprendizado e superação de desafios.\nEste aplicativo é o resultado\n do nosso comprometimento\nem proporcionar uma\nexperiência única aos participantes\n da Feteps, conectando pessoas,\nideias e tecnologia. Estamos orgulhosos\nde contribuir para o sucesso\ndeste evento e ansiosos para compartilhar\nessa jornada emocionante com vocês.',
-                        style: GoogleFonts.poppins(
-                          fontSize: MediaQuery.of(context).size.width * 0.04,
-                          color: Colors.black,
+                      Padding(
+                        padding: EdgeInsets.all(
+                          screenWidth * 0.05,
                         ),
-                        textAlign: TextAlign.center,
-                      )
+                        child: Container(
+                          width: screenWidth *
+                              0.9, // Ajuste a largura conforme necessário
+                          child: Text(
+                            'Somos um grupo de alunos dedicados e inovadores que uniram suas paixões pela tecnologia e educação. Movidos pelo desejo de fazer a diferença, desenvolvemos um aplicativo para a Feira Tecnológica do Estado de São Paulo (Feteps). Nossa jornada foi marcada por colaboração, aprendizado e superação de desafios. Este aplicativo é o resultado do nosso comprometimento em proporcionar uma experiência única aos participantes da Feteps, conectando pessoas, ideias e tecnologia. Estamos orgulhosos de contribuir para o sucesso deste evento e ansiosos para compartilhar essa jornada emocionante com vocês.',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.04,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  SizedBox(
-                      child: Container(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  )),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
                         'lib/assets/estudantes.png',
-                        width: MediaQuery.of(context).size.width * 0.45,
+                        width: screenWidth * 0.45,
                       )
                     ],
                   ),
                   SizedBox(
                       child: Container(
-                    height: MediaQuery.of(context).size.height * 0.01,
+                    height: screenHeight * 0.01,
                   )),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -111,7 +115,8 @@ class _SobreNosPageState extends State<SobreNosPage> {
                             Navigator.pushReplacement(
                               context,
                               PageTransition(
-                                child:  const NossaEquipePage(), type:  PageTransitionType.topToBottom,
+                                child: const NossaEquipePage(),
+                                type: PageTransitionType.topToBottom,
                               ),
                             );
                           },

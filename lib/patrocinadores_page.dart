@@ -27,8 +27,8 @@ class _PatrocinadoresPageState extends State<PatrocinadoresPage> {
   }
 
   Future<void> fetchPatrocinadores() async {
-    final url = Uri.parse(
-        GlobalPageState.Url + '/appfeteps/pages/Exhibitor/get.php?type=Patrocinador');
+    final url = Uri.parse(GlobalPageState.Url +
+        '/appfeteps/pages/Exhibitor/get.php?type=Patrocinador');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -58,70 +58,66 @@ class _PatrocinadoresPageState extends State<PatrocinadoresPage> {
             endDrawer: const MenuPage(),
             body: ListView(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.025),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(screenWidth * 0.05),
-                            child: Text(
-                              'Apoiadores',
-                              style: GoogleFonts.poppins(
-                                  fontSize: screenWidth * 0.08,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color.fromARGB(255, 14, 56, 70)),
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(screenWidth * 0.05),
-                            child: Text(
-                                'Patrocionadores da Feira Tecnológica\ndo Centro Paula Souza!',
-                                style:
-                                    TextStyle(fontSize: screenWidth * 0.045)),
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(screenWidth * 0.05),
+                          child: Text(
+                            'Apoiadores',
+                            style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.08,
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 14, 56, 70)),
                           ),
-                        ],
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(screenWidth * 0.05),
+                          child: Text(
+                              'Apoiadores da Feira Tecnológica\ndo Centro Paula Souza!',
+                              style: TextStyle(fontSize: screenWidth * 0.045)),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'lib/assets/dinheiro.png',
+                          width: screenWidth * 0.55,
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.02,
                       ),
+                      child: const Divider(
+                        thickness: 1.5,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    for (int i = 0; i < patrocinadores.length; i += 2)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            'lib/assets/dinheiro.png',
-                            width: screenWidth * 0.55,
-                          )
+                          if (i < patrocinadores.length)
+                            CardWidget(
+                              patrocinador: patrocinadores[i],
+                            ),
+                          if (i + 1 < patrocinadores.length)
+                            CardWidget(
+                              patrocinador: patrocinadores[i + 1],
+                            ),
                         ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: screenWidth * 0.02,
-                        ),
-                        child: const Divider(
-                          thickness: 1.5,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      for (int i = 0; i < patrocinadores.length; i += 2)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (i < patrocinadores.length)
-                              CardWidget(
-                                patrocinador: patrocinadores[i],
-                              ),
-                            if (i + 1 < patrocinadores.length)
-                              CardWidget(
-                                patrocinador: patrocinadores[i + 1],
-                              ),
-                          ],
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
               ],
             ),

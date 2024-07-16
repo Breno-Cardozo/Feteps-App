@@ -57,35 +57,19 @@ class _MenuPageState extends State<MenuPage> {
               child: ListView(
                 children: <Widget>[
                   SizedBox(
-                    height: screenHeight * 0.25,
+                    height: screenHeight * 0.2,
                     child: DrawerHeader(
                       decoration: const BoxDecoration(
-                        color: Colors.white,
-                        border: Border(
-                          bottom: BorderSide(color: Colors.white, )
-                        )
-                      ),
+                          color: Colors.white,
+                          border: Border(
+                              bottom: BorderSide(
+                            color: Colors.white,
+                          ))),
                       child: Builder(builder: (BuildContext context) {
                         return Row(
                           children: [
-                            // IconButton(
-                            //   onPressed: () {
-                            //     Scaffold.of(context).closeEndDrawer();
-                            //   },
-                            //   icon: const Row(
-                            //     mainAxisAlignment: MainAxisAlignment.start,
-                            //     children: [
-                            //       Icon(
-                            //         Icons.arrow_back_sharp,
-                            //         color: Colors.black,
-                            //         size: 45,
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
                             Padding(
-                              padding:
-                                  EdgeInsets.only(left: screenWidth * 0.2),
+                              padding: EdgeInsets.only(left: screenWidth * 0.2),
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF0E414F),
@@ -107,14 +91,13 @@ class _MenuPageState extends State<MenuPage> {
                               ),
                             ),
                           ],
-                          
                         );
                       }),
                     ),
                   ),
                   _buildDrawerItem(
                     icon: Icons.home,
-                    text: 'Home',
+                    text: 'Início',
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
@@ -137,7 +120,7 @@ class _MenuPageState extends State<MenuPage> {
                     },
                   ),
                   _buildDrawerItem(
-                    icon: Icons.settings,
+                    icon: Icons.lightbulb,
                     text: 'Projetos',
                     onTap: () {
                       Navigator.pushReplacement(
@@ -161,6 +144,30 @@ class _MenuPageState extends State<MenuPage> {
                     },
                   ),
                   _buildDrawerItem(
+                    icon: Icons.mic,
+                    text: 'Palestrantes',
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: const PalestrantesPage(),
+                            type: PageTransitionType.fade),
+                      );
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.thumb_up,
+                    text: 'Avaliações',
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: const AvaliacaoPage(),
+                            type: PageTransitionType.fade),
+                      );
+                    },
+                  ),
+                  _buildDrawerItem(
                     icon: Icons.place,
                     text: 'Mapa',
                     onTap: () {
@@ -168,18 +175,6 @@ class _MenuPageState extends State<MenuPage> {
                         context,
                         PageTransition(
                             child: const MapaPage(),
-                            type: PageTransitionType.fade),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.mic_none,
-                    text: 'Palestrantes',
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageTransition(
-                            child: const PalestrantesPage(),
                             type: PageTransitionType.fade),
                       );
                     },
@@ -220,18 +215,6 @@ class _MenuPageState extends State<MenuPage> {
                       );
                     },
                   ),
-                  _buildDrawerItem(
-                    icon: Icons.thumb_up,
-                    text: 'Avaliações',
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageTransition(
-                            child: const AvaliacaoPage(),
-                            type: PageTransitionType.fade),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
@@ -242,9 +225,8 @@ class _MenuPageState extends State<MenuPage> {
             Container(
               color: Colors.white,
               child: Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.03,
-                  bottom: MediaQuery.of(context).size.height * 0.03,
+                padding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.height * 0.015,
                 ),
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.4,
@@ -317,7 +299,6 @@ class _MenuPageState extends State<MenuPage> {
           style: GoogleFonts.openSans(
             color: Colors.black,
             fontSize: 16.0,
-            
           ),
         ),
         onTap: onTap,

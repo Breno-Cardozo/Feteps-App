@@ -62,7 +62,6 @@ class DetalheProjectPage extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-      
         textTheme: GoogleFonts.interTextTheme(),
       ),
       home: Scaffold(
@@ -151,7 +150,7 @@ class DetalheProjectPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             Text(
@@ -164,11 +163,12 @@ class DetalheProjectPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              project['project_abstract'] ?? 'Lorem ipsum dolor sit amet...',
+              project['project_abstract'] ?? 'Este projeto não possuí um resumo.',
               style: GoogleFonts.inter(
                 fontSize: screenWidth * 0.042,
                 color: Colors.black,
               ),
+              textAlign: TextAlign.justify,
             ),
             const Divider(
               color: Colors.black,
