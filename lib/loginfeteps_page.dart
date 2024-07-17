@@ -8,6 +8,8 @@ import 'package:feteps/telainicial_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'global.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class LoginFetepsPage extends StatefulWidget {
   const LoginFetepsPage({super.key});
@@ -31,6 +33,8 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
@@ -52,13 +56,13 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                 icon: Icon(
                   size: MediaQuery.of(context).size.width * 0.075,
                   Icons.arrow_back_sharp,
-                  color: const Color(0xFF0E414F),
+                  color: themeProvider.getSpecialColor2(),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0, left: 20, right: 20),
                 child: Image.asset(
-                  'lib/assets/logo.png',
+                  logoAsset,
                   width: MediaQuery.of(context).size.width * 0.65,
                 ),
               ),
@@ -104,7 +108,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                     "LOGIN",
                     style: GoogleFonts.roboto(
                       fontSize: MediaQuery.of(context).size.width * 0.069,
-                      color: Colors.black,
+                      color: themeProvider.getSpecialColor3(),
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -131,7 +135,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                                   borderSide: BorderSide(color: Colors.black),
                                 ),
                                 labelStyle: GoogleFonts.roboto(
-                                  color: Colors.black,
+                                  color: themeProvider.getSpecialColor3(),
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16.0,
                                 ),
@@ -141,7 +145,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                               decoration: InputDecoration(
                                 labelText: 'E-mail',
                                 labelStyle: GoogleFonts.roboto(
-                                  color: Colors.black,
+                                  color: themeProvider.getSpecialColor3(),
                                   fontWeight: FontWeight.bold,
                                   fontSize:
                                       MediaQuery.of(context).size.width * 0.05,
@@ -183,7 +187,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                               decoration: InputDecoration(
                                 labelText: 'Senha',
                                 labelStyle: GoogleFonts.roboto(
-                                  color: Colors.black,
+                                  color: themeProvider.getSpecialColor3(),
                                   fontWeight: FontWeight.bold,
                                   fontSize:
                                       MediaQuery.of(context).size.width * 0.05,
@@ -202,7 +206,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                             ),
                           ),
                           SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.06,
+                            height: MediaQuery.of(context).size.height * 0.053,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -247,7 +251,8 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       minimumSize: const Size(100, 39),
-                                      backgroundColor: Colors.white,
+                                      backgroundColor:
+                                          themeProvider.getSpecialColor4(),
                                       shadowColor: Colors.transparent,
                                       elevation: 0,
                                       shape: RoundedRectangleBorder(
@@ -262,7 +267,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                                     child: Text(
                                       "Confirmar",
                                       style: GoogleFonts.oswald(
-                                        color: Colors.black,
+                                        color: themeProvider.getSpecialColor3(),
                                         fontWeight: FontWeight.bold,
                                         fontSize:
                                             MediaQuery.of(context).size.width *
@@ -282,7 +287,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                                   Navigator.pushReplacement(
                                     context,
                                     PageTransition(
-                                      child: const EsqueciSenhaPage(),
+                                      child: EsqueciSenhaPage(),
                                       type: PageTransitionType.bottomToTop,
                                     ),
                                   );
@@ -290,9 +295,10 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
                                 child: Text(
                                   "Esqueci minha senha",
                                   style: GoogleFonts.oswald(
-                                    color: const Color(0xFF0E414F),
+                                    color: themeProvider.getSpecialColor(),
                                     decoration: TextDecoration.underline,
-                                    decorationColor: const Color(0xFF0E414F),
+                                    decorationColor:
+                                        themeProvider.getSpecialColor(),
                                     fontWeight: FontWeight.bold,
                                     fontSize:
                                         MediaQuery.of(context).size.width *
@@ -318,8 +324,8 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
   Future<bool> login() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    final url = Uri.parse(
-        GlobalPageState.Url + '/appfeteps/pages/Users/loginUser.php?userEmail=${_emailController.text}&userPassword=${_passwordController.text}');
+    final url = Uri.parse(GlobalPageState.Url +
+        '/appfeteps/pages/Users/loginUser.php?userEmail=${_emailController.text}&userPassword=${_passwordController.text}');
 
     final resposta = await http.post(url);
 
