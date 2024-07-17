@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class AtualizarDadosPage extends StatefulWidget {
   const AtualizarDadosPage({super.key});
@@ -104,143 +106,141 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String UserAsset = themeProvider.getUserAsset();
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(),
-      home: Scaffold(
-        appBar: AppBar2_page(
-            screenWidth: screenWidth, destinationPage: const PerfilPage()),
-        body: ListView(
-          scrollDirection: Axis.vertical,
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: screenHeight * 0.03,
-                    left: screenWidth * 0.07,
-                    bottom: screenHeight * 0.04,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Atualizar dados",
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.069,
-                          color: const Color(0xFF0E414F),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
+    return Scaffold(
+      appBar: AppBar2_page(
+          screenWidth: screenWidth, destinationPage: const PerfilPage()),
+      body: ListView(
+        scrollDirection: Axis.vertical,
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  top: screenHeight * 0.03,
+                  left: screenWidth * 0.07,
+                  bottom: screenHeight * 0.04,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Atualizar dados",
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.069,
+                        color: themeProvider.getSpecialColor2(),
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.only(bottom: screenHeight * 0.015),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'lib/assets/user.png',
-                        width: screenWidth * 0.45,
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: screenHeight * 0.015),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      UserAsset,
+                      width: screenWidth * 0.45,
+                    ),
+                  ],
+                ),
+              ),
+              buildTextField(
+                context,
+                labelText: 'Nome de usuário:',
+                controller: _userNameController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'Estado:',
+                controller: _stateController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'Cidade:',
+                controller: _cityController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'Cod Instituição:',
+                controller: _institutionCodeController,
+              ),
+              _errorMessage.isNotEmpty
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: screenHeight * 0.03),
+                      child: Text(
+                        _errorMessage,
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    ],
-                  ),
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Nome de usuário:',
-                  controller: _userNameController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Estado:',
-                  controller: _stateController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Cidade:',
-                  controller: _cityController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Cod Instituição:',
-                  controller: _institutionCodeController,
-                ),
-                _errorMessage.isNotEmpty
-                    ? Padding(
-                        padding: EdgeInsets.only(bottom: screenHeight * 0.03),
-                        child: Text(
-                          _errorMessage,
-                          style: const TextStyle(color: Colors.red),
+                    )
+                  : Container(),
+              Padding(
+                padding: EdgeInsets.only(
+                    top: screenHeight * 0.04, bottom: screenHeight * 0.02),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: const Color(0xFFB6382B),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.012,
+                          right: MediaQuery.of(context).size.width * 0.012,
                         ),
-                      )
-                    : Container(),
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: screenHeight * 0.04, bottom: screenHeight * 0.02),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25.0),
-                          color: const Color(0xFFB6382B),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: MediaQuery.of(context).size.width * 0.012,
-                            right: MediaQuery.of(context).size.width * 0.012,
-                          ),
-                          child: ElevatedButton(
-                            onPressed: _isLoading
-                                ? null
-                                : () async {
-                                    bool dadosAtualizados =
-                                        await _atualizarDados();
-                                    if (dadosAtualizados) {
-                                      _deucerto;
-                                    }
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(100, 39),
-                              backgroundColor: Colors.white,
-                              shadowColor: Colors.transparent,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50.0),
-                                side:
-                                    const BorderSide(color: Colors.transparent),
-                              ),
+                        child: ElevatedButton(
+                          onPressed: _isLoading
+                              ? null
+                              : () async {
+                                  bool dadosAtualizados =
+                                      await _atualizarDados();
+                                  if (dadosAtualizados) {
+                                    _deucerto;
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(100, 39),
+                            backgroundColor: themeProvider.getSpecialColor4(),
+                            shadowColor: Colors.transparent,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                              side: const BorderSide(color: Colors.transparent),
                             ),
-                            child: Text(
-                              _isLoading ? 'Atualizando...' : 'Atualizar',
-                              style: GoogleFonts.oswald(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize:
-                                    MediaQuery.of(context).size.width * 0.045,
-                              ),
+                          ),
+                          child: Text(
+                            _isLoading ? 'Atualizando...' : 'Atualizar',
+                            style: GoogleFonts.oswald(
+                              color: themeProvider.getSpecialColor3(),
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.045,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Padding buildTextField(BuildContext context,
       {required String labelText, required TextEditingController controller}) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
@@ -256,12 +256,13 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
               decoration: InputDecoration(
                 labelText: labelText,
                 labelStyle: GoogleFonts.poppins(
-                  color: Colors.black,
+                  color: themeProvider.getSpecialColor3(),
                   fontSize: screenWidth * 0.045,
                   fontWeight: FontWeight.bold,
                 ),
-                border: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                border: UnderlineInputBorder(
+                  borderSide:
+                      BorderSide(color: themeProvider.getSpecialColor3()),
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(

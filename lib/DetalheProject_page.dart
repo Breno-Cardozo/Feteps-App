@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class DetalheProjectPage extends StatelessWidget {
   final Map<String, dynamic> project;
@@ -53,149 +55,146 @@ class DetalheProjectPage extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final String? bannerUrl = project['banner'];
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
     // Converte o 'id_ods' para string e fornece um valor padrão se for null
     String odsId =
         project['ods']['id_ods']?.toString() ?? 'ID ODS Não Disponível';
     String nameOds =
         project['ods']['name_ods']?.toString() ?? 'Nome ODS Não Disponível';
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        textTheme: GoogleFonts.interTextTheme(),
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: SizedBox(
-            width: 400,
-            height: 300,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Padding(
-                    padding: const EdgeInsets.only(bottom: 8, right: 15),
-                    child: Icon(
-                      size: screenWidth * 0.075,
-                      Icons.arrow_back_sharp,
-                      color: const Color(0xFF0E414F),
-                    ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: SizedBox(
+          width: 400,
+          height: 300,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Padding(
+                  padding: const EdgeInsets.only(bottom: 8, right: 15),
+                  child: Icon(
+                    size: screenWidth * 0.075,
+                    Icons.arrow_back_sharp,
+                    color: themeProvider.getSpecialColor2(),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 20,
-                    right: 20,
-                    bottom: 15,
-                  ),
-                  child: Image.asset(
-                    'lib/assets/logo.png',
-                    width: MediaQuery.of(context).size.width * 0.65,
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            Center(
-              child: Text(
-                // Exibe o ID ODS convertido para string
-                'ODS $odsId: $nameOds',
-                style: GoogleFonts.inter(
-                  fontSize: MediaQuery.of(context).size.width * 0.055,
-                  fontWeight: FontWeight.bold,
-                  color: cor(project["ods"]["id_ods"]),
-                ),
-                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 20),
-            if (bannerUrl != null && bannerUrl.isNotEmpty)
-              Container(
-                height: screenHeight * 0.25,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                  color: Colors.black,
-                  width: 2.5,
-                )),
-                child: Image.network(
-                  bannerUrl,
-                  width: screenWidth * 0.42,
-                  height: screenHeight * 0.19,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      'lib/assets/Rectangle.png',
-                      width: screenWidth * 0.42,
-                    );
-                  },
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 20,
+                  right: 20,
+                  bottom: 15,
+                ),
+                child: Image.asset(
+                  logoAsset,
+                  width: MediaQuery.of(context).size.width * 0.65,
                 ),
               )
-            else
-              Image.asset(
-                'lib/assets/Rectangle.png',
-                width: screenWidth * 0.42,
-              ),
-            const SizedBox(height: 20),
-            Text(
-              project['name_project'] ?? 'Nome do Projeto',
+            ],
+          ),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20.0),
+        children: [
+          Center(
+            child: Text(
+              // Exibe o ID ODS convertido para string
+              'ODS $odsId: $nameOds',
               style: GoogleFonts.inter(
-                fontSize: screenWidth * 0.06,
+                fontSize: MediaQuery.of(context).size.width * 0.055,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: cor(project["ods"]["id_ods"]),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Resumo',
-              style: GoogleFonts.inter(
-                fontSize: screenWidth * 0.048,
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 208, 20, 20),
+          ),
+          const SizedBox(height: 20),
+          if (bannerUrl != null && bannerUrl.isNotEmpty)
+            Container(
+              height: screenHeight * 0.25,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                color: themeProvider.getBorderColor(),
+                width: 2.5,
+              )),
+              child: Image.network(
+                bannerUrl,
+                width: screenWidth * 0.42,
+                height: screenHeight * 0.19,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'lib/assets/Rectangle.png',
+                    width: screenWidth * 0.42,
+                  );
+                },
               ),
+            )
+          else
+            Image.asset(
+              'lib/assets/Rectangle.png',
+              width: screenWidth * 0.42,
             ),
-            const SizedBox(height: 10),
-            Text(
-              project['project_abstract'] ?? 'Este projeto não possuí um resumo.',
-              style: GoogleFonts.inter(
-                fontSize: screenWidth * 0.042,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.justify,
+          const SizedBox(height: 20),
+          Text(
+            project['name_project'] ?? 'Nome do Projeto',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.06,
+              fontWeight: FontWeight.bold,
+              color: themeProvider.getSpecialColor3(),
             ),
-            const Divider(
-              color: Colors.black,
-              height: 40,
-              thickness: 2,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Resumo',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.048,
+              fontWeight: FontWeight.bold,
+              color: const Color.fromARGB(255, 208, 20, 20),
             ),
-            Text(
-              "Integrantes",
-              style: GoogleFonts.inter(
-                fontSize: screenWidth * 0.055,
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 14, 56, 70),
-              ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            project['project_abstract'] ?? 'Este projeto não possuí um resumo.',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.042,
+              color: themeProvider.getSpecialColor3(),
             ),
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 20.0,
-              runSpacing: 20.0,
-              alignment: WrapAlignment.spaceAround,
-              children: [
-                // Itera sobre os expositores e cria um IconPerson para cada um
-                for (var exhibitor in project['exhibitors'])
-                  IconPerson(exhibitor: exhibitor),
-              ],
+            textAlign: TextAlign.justify,
+          ),
+          Divider(
+            color: themeProvider.getSpecialColor3(),
+            height: 40,
+            thickness: 2,
+          ),
+          Text(
+            "Integrantes",
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.055,
+              fontWeight: FontWeight.bold,
+              color: themeProvider.getSpecialColor(),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 20.0,
+            runSpacing: 20.0,
+            alignment: WrapAlignment.spaceAround,
+            children: [
+              // Itera sobre os expositores e cria um IconPerson para cada um
+              for (var exhibitor in project['exhibitors'])
+                IconPerson(exhibitor: exhibitor),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -208,6 +207,7 @@ class IconPerson extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Column(
       children: [
         // Exibe a foto do expositor, ou um ícone padrão se não houver foto
@@ -216,17 +216,17 @@ class IconPerson extends StatelessWidget {
                 backgroundImage: NetworkImage(exhibitor['photo']),
                 radius: 25,
               )
-            : const FaIcon(
+            : FaIcon(
                 FontAwesomeIcons.userCircle,
                 size: 50.0,
-                color: Color.fromARGB(255, 14, 56, 70),
+                color: themeProvider.getSpecialColor(),
               ),
         const SizedBox(height: 8),
         Text(
           exhibitor['name_exhibitor'] ?? 'Nome Desconhecido',
           style: GoogleFonts.inter(
             fontSize: 14.4,
-            color: const Color.fromARGB(255, 14, 56, 70),
+            color: themeProvider.getSpecialColor(),
           ),
         ),
       ],

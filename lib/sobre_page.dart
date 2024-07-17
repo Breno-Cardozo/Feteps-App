@@ -7,6 +7,8 @@ import 'package:feteps/telainicial_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class SobrePage extends StatefulWidget {
   const SobrePage({super.key});
@@ -31,174 +33,169 @@ class _SobrePageState extends State<SobrePage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(),
-        home: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              title: SizedBox(
-                width: 400,
-                height: 300,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 15.0, left: 30, bottom: 15),
-                      child: Image.asset(
-                        'lib/assets/logo.png',
-                        width: MediaQuery.of(context).size.width * 0.65,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              actions: [
-                Builder(
-                  builder: (BuildContext context) {
-                    return IconButton(
-                      icon: Icon(
-                        Icons.menu,
-                        size: MediaQuery.of(context).size.width * 0.095,
-                        color: const Color(0xFF0E414F),
-                      ),
-                      onPressed: () {
-                        Scaffold.of(context).openEndDrawer();
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-            endDrawer: MenuPage(),
-            body: Column(
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: SizedBox(
+            width: 400,
+            height: 300,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'lib/assets/banner2.png',
-                        width: MediaQuery.of(context).size.width * 1.0,
-                      )
-                    ],
+                Padding(
+                  padding:
+                      const EdgeInsets.only(top: 15.0, left: 30, bottom: 15),
+                  child: Image.asset(
+                    logoAsset,
+                    width: MediaQuery.of(context).size.width * 0.65,
                   ),
-                ),
-                TabBar(
-                  indicatorColor: const Color(0xFFFFD35F),
-                  labelColor: Colors.black,
-                  labelStyle: GoogleFonts.poppins(
-                    fontSize: MediaQuery.of(context).size.width * 0.043,
-                  ),
-                  tabs: const [
-                    Tab(text: 'Feteps'),
-                    Tab(text: 'Programação'),
-                  ],
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      ListView(
-                        scrollDirection: Axis.vertical,
-                        children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: screenHeight * 0.04,
-                                ),
-                                child: Image.asset(
-                                  'lib/assets/alunos.png',
-                                  width: screenWidth * 0.65,
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Flexible(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            MediaQuery.of(context).size.width *
-                                                0.07,
-                                      ),
-                                      child: Text(
-                                        _isExpanded
-                                            ? _fullText
-                                            : _fullText.substring(0, 636) +
-                                                '...',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.04,
-                                          color: Colors.black,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _isExpanded = !_isExpanded;
-                                      });
-                                    },
-                                    child: Text(
-                                      _isExpanded ? "Leia Menos" : "Leia Mais",
-                                      style: GoogleFonts.poppins(
-                                        fontSize:
-                                            MediaQuery.of(context).size.width *
-                                                0.045,
-                                        color: const Color(0xFFB6382B),
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor:
-                                            const Color(0xFFB6382B),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
-                      ), // Conteúdo da primeira guia
-                      ListView(
-                        scrollDirection: Axis.vertical,
-                        children: [
-                          Column(children: [
-                            Padding(
-                              padding: EdgeInsets.all(screenWidth * 0.025),
-                              child: const EventTable(),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'lib/assets/calendario.png',
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.55,
-                                )
-                              ],
-                            ),
-                          ]),
-                        ],
-                      ), // Conteúdo da segunda guia
-                    ],
-                  ),
-                ),
+                )
               ],
             ),
           ),
-        ));
+          actions: [
+            Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.menu,
+                    size: MediaQuery.of(context).size.width * 0.095,
+                    color: themeProvider.getSpecialColor2(),
+                  ),
+                  onPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        endDrawer: MenuPage(),
+        body: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+              child: Row(
+                children: [
+                  Image.asset(
+                    'lib/assets/banner2.png',
+                    width: MediaQuery.of(context).size.width * 1.0,
+                  )
+                ],
+              ),
+            ),
+            TabBar(
+              indicatorColor: const Color(0xFFFFD35F),
+              labelColor: themeProvider.getSpecialColor3(),
+              labelStyle: GoogleFonts.poppins(
+                fontSize: MediaQuery.of(context).size.width * 0.043,
+              ),
+              tabs: const [
+                Tab(text: 'Feteps'),
+                Tab(text: 'Programação'),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  ListView(
+                    scrollDirection: Axis.vertical,
+                    children: [
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: screenHeight * 0.04,
+                            ),
+                            child: Image.asset(
+                              'lib/assets/alunos.png',
+                              width: screenWidth * 0.65,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        MediaQuery.of(context).size.width *
+                                            0.07,
+                                  ),
+                                  child: Text(
+                                    _isExpanded
+                                        ? _fullText
+                                        : _fullText.substring(0, 636) + '...',
+                                    style: GoogleFonts.poppins(
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.04,
+                                        color:
+                                            themeProvider.getSpecialColor3()),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isExpanded = !_isExpanded;
+                                  });
+                                },
+                                child: Text(
+                                  _isExpanded ? "Leia Menos" : "Leia Mais",
+                                  style: GoogleFonts.poppins(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.045,
+                                    color: const Color(0xFFB6382B),
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: const Color(0xFFB6382B),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ), // Conteúdo da primeira guia
+                  ListView(
+                    scrollDirection: Axis.vertical,
+                    children: [
+                      Column(children: [
+                        Padding(
+                          padding: EdgeInsets.all(screenWidth * 0.025),
+                          child: const EventTable(),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'lib/assets/calendario.png',
+                              width: MediaQuery.of(context).size.width * 0.55,
+                            )
+                          ],
+                        ),
+                      ]),
+                    ],
+                  ), // Conteúdo da segunda guia
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<bool> sair() async {
