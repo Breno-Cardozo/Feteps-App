@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class GabrielPage extends StatelessWidget {
   final String githubUrl = "https://github.com/GabrielCaspirro";
-  final String linkedinUrl ="https://www.linkedin.com/in/gabriel-caspirro-demarchi-049b62253/";
+  final String linkedinUrl =
+      "https://www.linkedin.com/in/gabriel-caspirro-demarchi-049b62253/";
   final String email = "gabriel.gcd08@gmail.com";
 
   const GabrielPage({super.key});
@@ -16,9 +19,12 @@ class GabrielPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String gitAsset = themeProvider.getGitAsset();
 
     return Scaffold(
-      appBar: AppBar2_page(screenWidth: screenWidth, destinationPage: const NossaEquipePage()),
+      appBar: AppBar2_page(
+          screenWidth: screenWidth, destinationPage: const NossaEquipePage()),
       body: ListView(
         children: [
           Padding(
@@ -33,10 +39,9 @@ class GabrielPage extends StatelessWidget {
                     Text(
                       'Participante do Projeto',
                       style: GoogleFonts.poppins(
-                        fontSize: screenWidth * 0.06,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                          fontSize: screenWidth * 0.06,
+                          fontWeight: FontWeight.bold,
+                          color: themeProvider.getSpecialColor3()),
                     )
                   ],
                 ),
@@ -107,7 +112,7 @@ class GabrielPage extends StatelessWidget {
                         style: GoogleFonts.inter(
                           fontSize: screenWidth * 0.048,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: themeProvider.getSpecialColor3(),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -122,26 +127,25 @@ class GabrielPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       InkWell(
-                        onTap: () async {
-                          _launchURL(githubUrl);
-                        },
-                        child: Image.asset(
-                          'lib/assets/github.png',
-                          width: screenWidth * 0.1,
-                        )
-                      ),
+                          onTap: () async {
+                            _launchURL(githubUrl);
+                          },
+                          child: Image.asset(
+                            gitAsset,
+                            width: screenWidth * 0.1,
+                          )),
                       InkWell(
-                        onTap: () async {
-                          _launchURL(linkedinUrl);
-                        },
-                        child: Image.asset(
-                          'lib/assets/linkedin.png',
-                          width: screenWidth * 0.1,
-                        )
-                      ),
+                          onTap: () async {
+                            _launchURL(linkedinUrl);
+                          },
+                          child: Image.asset(
+                            'lib/assets/linkedin.png',
+                            width: screenWidth * 0.1,
+                          )),
                       IconButton(
                         icon: Icon(Icons.email,
-                            color: Colors.orange, size: screenWidth * 0.1),
+                            color: themeProvider.getSpecialColor(),
+                            size: screenWidth * 0.1),
                         onPressed: () => _copyToClipboard(email, context),
                       ),
                     ],
@@ -155,7 +159,7 @@ class GabrielPage extends StatelessWidget {
     );
   }
 
-Future<void> _launchURL(String url) async {
+  Future<void> _launchURL(String url) async {
     if (url.isEmpty) {
       print('URL is empty');
       return;
