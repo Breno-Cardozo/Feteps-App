@@ -39,6 +39,7 @@ class _SobrePageState extends State<SobrePage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: SizedBox(
             width: 400,
             height: 300,
