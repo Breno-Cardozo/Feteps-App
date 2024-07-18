@@ -1,7 +1,3 @@
-import 'package:feteps/Menu_Page.dart';
-import 'package:feteps/Votar_page.dart';
-import 'package:feteps/appbar/appbar1_page.dart';
-import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,7 +5,11 @@ import 'global.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
-import 'package:feteps/Temas/theme_provider.dart';
+import 'Temas/theme_provider.dart';
+import 'Menu_Page.dart';
+import 'Votar_page.dart';
+import 'appbar/appbar1_page.dart';
+import 'sobre_page.dart';
 
 class AvaliacaoPage extends StatefulWidget {
   const AvaliacaoPage({super.key});
@@ -36,10 +36,26 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final Map<String, dynamic> projectData = jsonDecode(response.body);
+
+        // Extrair os valores das chaves
+        final int fiveStars = projectData['five_stars'] ?? 0;
+        final int fourStars = projectData['four_stars'] ?? 0;
+        final int threeStars = projectData['three_stars'] ?? 0;
+        final int twoStars = projectData['two_stars'] ?? 0;
+        final int oneStar = projectData['one_star'] ?? 0;
+
+        // Navegar para a próxima tela passando os valores
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VotarPage(project: projectData),
+            builder: (context) => VotarPage(
+              project: projectData,
+              fiveStars: fiveStars,
+              fourStars: fourStars,
+              threeStars: threeStars,
+              twoStars: twoStars,
+              oneStar: oneStar,
+            ),
           ),
         );
       } else {
