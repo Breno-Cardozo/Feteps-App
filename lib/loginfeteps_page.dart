@@ -322,6 +322,7 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
         GlobalPageState.Url + '/appfeteps/pages/Users/loginUser.php?userEmail=${_emailController.text}&userPassword=${_passwordController.text}');
 
     final resposta = await http.post(url);
+    print(resposta);
 
     if (resposta.statusCode == 200) {
       var data = jsonDecode(resposta.body);
@@ -341,7 +342,9 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
 
       return true;
     } else {
+      print("não foi possivel estabelecer conexão");
       return false;
+
     }
   }
 }

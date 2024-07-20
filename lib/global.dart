@@ -8,7 +8,7 @@ class Global extends StatefulWidget{
 }
 
 class GlobalPageState extends State<Global>{
-  static String Url = "https://profandersonvanin.com.br";
+  static String Url = 'https://app.feteps.cpscetec.com.br';
 
   @override
   Widget build(BuildContext context) {
