@@ -15,6 +15,7 @@ class AppBar1_page extends StatelessWidget implements PreferredSizeWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     String logoAsset = themeProvider.getLogoAsset();
     return AppBar(
+      automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
