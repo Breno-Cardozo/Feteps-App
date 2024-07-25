@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:feteps/telainicial_page.dart';
 import 'package:http/http.dart' as http;
 import 'global.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class EsqueciSenhaPage extends StatefulWidget {
   const EsqueciSenhaPage({super.key});
@@ -33,6 +35,8 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
@@ -46,7 +50,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                   Navigator.pushReplacement(
                     context,
                     PageTransition(
-                      child: const LoginFetepsPage(),
+                      child: LoginFetepsPage(),
                       type: PageTransitionType.topToBottom,
                     ),
                   );
@@ -54,13 +58,13 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                 icon: Icon(
                   size: MediaQuery.of(context).size.width * 0.075,
                   Icons.arrow_back_sharp,
-                  color: const Color(0xFF0E414F),
+                  color: themeProvider.getSpecialColor2(),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0, left: 20, right: 20),
                 child: Image.asset(
-                  'lib/assets/logo.png',
+                  logoAsset,
                   width: MediaQuery.of(context).size.width * 0.65,
                 ),
               ),
@@ -104,7 +108,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                     "Esqueceu sua senha?",
                     style: GoogleFonts.roboto(
                       fontSize: MediaQuery.of(context).size.width * 0.069,
-                      color: Colors.black,
+                      color: themeProvider.getSpecialColor3(),
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -141,7 +145,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                               decoration: InputDecoration(
                                 labelText: 'E-mail',
                                 labelStyle: GoogleFonts.roboto(
-                                  color: Colors.black,
+                                  color: themeProvider.getSpecialColor3(),
                                   fontWeight: FontWeight.bold,
                                   fontSize:
                                       MediaQuery.of(context).size.width * 0.05,
@@ -183,7 +187,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                               decoration: InputDecoration(
                                 labelText: 'CPF',
                                 labelStyle: GoogleFonts.roboto(
-                                  color: Colors.black,
+                                  color: themeProvider.getSpecialColor3(),
                                   fontWeight: FontWeight.bold,
                                   fontSize:
                                       MediaQuery.of(context).size.width * 0.05,
@@ -223,7 +227,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                               decoration: InputDecoration(
                                 labelText: 'Nova senha',
                                 labelStyle: GoogleFonts.roboto(
-                                  color: Colors.black,
+                                  color: themeProvider.getSpecialColor3(),
                                   fontWeight: FontWeight.bold,
                                   fontSize:
                                       MediaQuery.of(context).size.width * 0.05,
@@ -242,7 +246,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                             ),
                           ),
                           SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.06,
+                            height: MediaQuery.of(context).size.height * 0.053,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +269,8 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                                         _isLoading ? null : _alterarSenha,
                                     style: ElevatedButton.styleFrom(
                                       minimumSize: const Size(100, 39),
-                                      backgroundColor: Colors.white,
+                                      backgroundColor:
+                                          themeProvider.getSpecialColor4(),
                                       shadowColor: Colors.transparent,
                                       elevation: 0,
                                       shape: RoundedRectangleBorder(
@@ -280,7 +285,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                                           ? 'Atualizando...'
                                           : 'Atualizar Senha',
                                       style: GoogleFonts.oswald(
-                                        color: Colors.black,
+                                        color: themeProvider.getSpecialColor3(),
                                         fontWeight: FontWeight.bold,
                                         fontSize:
                                             MediaQuery.of(context).size.width *

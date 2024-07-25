@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class VotarPage extends StatefulWidget {
   final Map<String, dynamic> project;
@@ -124,6 +126,8 @@ class _VotarPageState extends State<VotarPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final String? bannerUrl = widget.project['banner'];
@@ -132,184 +136,179 @@ class _VotarPageState extends State<VotarPage> {
     String nameOds = widget.project['ods']['name_ods']?.toString() ??
         'Nome ODS Não Disponível';
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        textTheme: GoogleFonts.interTextTheme(),
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: SizedBox(
-            width: 400,
-            height: 300,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Padding(
-                    padding: const EdgeInsets.only(bottom: 8, right: 15),
-                    child: Icon(
-                      size: screenWidth * 0.075,
-                      Icons.arrow_back_sharp,
-                      color: const Color(0xFF0E414F),
-                    ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: SizedBox(
+          width: 400,
+          height: 300,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Padding(
+                  padding: const EdgeInsets.only(bottom: 8, right: 15),
+                  child: Icon(
+                    size: screenWidth * 0.075,
+                    Icons.arrow_back_sharp,
+                    color: themeProvider.getSpecialColor2(),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 20,
-                    right: 20,
-                    bottom: 15,
-                  ),
-                  child: Image.asset(
-                    'lib/assets/logo.png',
-                    width: MediaQuery.of(context).size.width * 0.65,
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            Center(
-              child: Text(
-                'ODS $odsId: $nameOds',
-                style: GoogleFonts.inter(
-                  fontSize: MediaQuery.of(context).size.width * 0.055,
-                  fontWeight: FontWeight.bold,
-                  color: cor(widget.project["ods"]["id_ods"]),
-                ),
-                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 20),
-            if (bannerUrl != null && bannerUrl.isNotEmpty)
-              Container(
-                height: screenHeight * 0.25,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                  color: Colors.black,
-                  width: 2.5,
-                )),
-                child: Image.network(
-                  bannerUrl,
-                  width: screenWidth * 0.42,
-                  height: screenHeight * 0.19,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      'lib/assets/Rectangle.png',
-                      width: screenWidth * 0.42,
-                    );
-                  },
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 20,
+                  right: 20,
+                  bottom: 15,
+                ),
+                child: Image.asset(
+                  logoAsset,
+                  width: MediaQuery.of(context).size.width * 0.65,
                 ),
               )
-            else
-              Image.asset(
-                'lib/assets/Rectangle.png',
-                width: screenWidth * 0.42,
-              ),
-            const SizedBox(height: 20),
-            Text(
-              widget.project['name_project'] ?? 'Nome do Projeto',
+            ],
+          ),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20.0),
+        children: [
+          Center(
+            child: Text(
+              'ODS $odsId: $nameOds',
               style: GoogleFonts.inter(
-                fontSize: screenWidth * 0.06,
+                fontSize: MediaQuery.of(context).size.width * 0.055,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: cor(widget.project["ods"]["id_ods"]),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Resumo',
-              style: GoogleFonts.inter(
-                fontSize: screenWidth * 0.048,
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 208, 20, 20),
+          ),
+          const SizedBox(height: 20),
+          if (bannerUrl != null && bannerUrl.isNotEmpty)
+            Container(
+              height: screenHeight * 0.25,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                color: themeProvider.getBorderColor(),
+                width: 2.5,
+              )),
+              child: Image.network(
+                bannerUrl,
+                width: screenWidth * 0.42,
+                height: screenHeight * 0.19,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'lib/assets/Rectangle.png',
+                    width: screenWidth * 0.42,
+                  );
+                },
               ),
+            )
+          else
+            Image.asset(
+              'lib/assets/Rectangle.png',
+              width: screenWidth * 0.42,
             ),
-            const SizedBox(height: 10),
-            Text(
-              widget.project['project_abstract'] ??
-                  'Este projeto não possuí um resumo.',
-              style: GoogleFonts.inter(
-                fontSize: screenWidth * 0.042,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.justify,
+          const SizedBox(height: 20),
+          Text(
+            widget.project['name_project'] ?? 'Nome do Projeto',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.06,
+              fontWeight: FontWeight.bold,
+              color: themeProvider.getSpecialColor3(),
             ),
-            const Divider(
-              color: Colors.black,
-              height: 40,
-              thickness: 2,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Resumo',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.048,
+              fontWeight: FontWeight.bold,
+              color: const Color.fromARGB(255, 208, 20, 20),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Avalie o projeto:',
-                  style: GoogleFonts.poppins(
-                    fontSize: 17.0,
-                    color: const Color.fromARGB(255, 14, 56, 70),
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            widget.project['project_abstract'] ??
+                'Este projeto não possuí um resumo.',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.042,
+              color: themeProvider.getSpecialColor3(),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: StarRating(
-                    maximumRating: 5,
-                    onChanged: (rating) {
-                      setState(() {
-                        _currentRating = rating;
-                      });
-                      print('Avaliação atual: $rating');
-                    },
-                    size: 35,
-                    color: Colors.black,
-                  ),
+            textAlign: TextAlign.justify,
+          ),
+          Divider(
+            color: themeProvider.getSpecialColor3(),
+            height: 40,
+            thickness: 2,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Avalie o projeto:',
+                style: GoogleFonts.poppins(
+                  fontSize: 17.0,
+                  color: themeProvider.getSpecialColor(),
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if (_currentRating > 0) {
-                      enviarVoto(_currentRating);
-                    } else {
-                      print('Selecione uma avaliação');
-                    }
+              )
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: StarRating(
+                  maximumRating: 5,
+                  onChanged: (rating) {
+                    setState(() {
+                      _currentRating = rating;
+                    });
+                    print('Avaliação atual: $rating');
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Text(
-                      'Enviar',
-                      style: GoogleFonts.oswald(
-                        color: const Color(0xFF0E414F),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  size: 35,
+                  color: themeProvider.getSpecialColor(),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  if (_currentRating > 0) {
+                    enviarVoto(_currentRating);
+                  } else {
+                    print('Selecione uma avaliação');
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Text(
+                    'Enviar',
+                    style: GoogleFonts.oswald(
+                      color: themeProvider.getSpecialColor(),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                )
-              ],
-            )
-          ],
-        ),
+                ),
+              )
+            ],
+          )
+        ],
       ),
     );
   }

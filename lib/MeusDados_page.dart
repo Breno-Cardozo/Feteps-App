@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class MeusDadosPage extends StatefulWidget {
   const MeusDadosPage({super.key});
@@ -101,106 +103,105 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(),
-      home: Scaffold(
-        appBar: AppBar2_page(
-            screenWidth: screenWidth, destinationPage: const PerfilPage()),
-        body: ListView(
-          scrollDirection: Axis.vertical,
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: screenHeight * 0.03,
-                    left: screenWidth * 0.07,
-                    bottom: screenHeight * 0.04,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Meus Dados",
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.069,
-                          color: const Color(0xFF0E414F),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    
+    return Scaffold(
+      appBar: AppBar2_page(
+          screenWidth: screenWidth, destinationPage: const PerfilPage()),
+      body: ListView(
+        scrollDirection: Axis.vertical,
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  top: screenHeight * 0.03,
+                  left: screenWidth * 0.07,
+                  bottom: screenHeight * 0.04,
                 ),
-                buildTextField(
-                  context,
-                  labelText: 'Email do Usuário:',
-                  controller: _emailController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Nome de usuário:',
-                  controller: _userNameController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Estado:',
-                  controller: _stateController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Cidade:',
-                  controller: _cityController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'ID de usuário:',
-                  controller: _idController,
-                ),
-                buildTextField(
-                  context,
-                  labelText: 'Cod Instituição:',
-                  controller: _institutionCodeController,
-                ),
-                SizedBox(height: screenHeight * 0.01),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          PageTransition(
-                            child: const AtualizarDadosPage(),
-                            type: PageTransitionType.bottomToTop,
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "Atualizar Meus Dados",
-                        style: GoogleFonts.oswald(
-                          color: const Color(0xFF0E414F),
-                          decoration: TextDecoration.underline,
-                          decorationColor: const Color(0xFF0E414F),
-                          fontWeight: FontWeight.bold,
-                          fontSize: MediaQuery.of(context).size.width * 0.05,
-                        ),
+                    Text(
+                      "Meus Dados",
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.069,
+                        color: themeProvider.getSpecialColor2(),
+                        fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              buildTextField(
+                context,
+                labelText: 'Email do Usuário:',
+                controller: _emailController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'Nome de usuário:',
+                controller: _userNameController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'Estado:',
+                controller: _stateController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'Cidade:',
+                controller: _cityController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'ID de usuário:',
+                controller: _idController,
+              ),
+              buildTextField(
+                context,
+                labelText: 'Cod Instituição:',
+                controller: _institutionCodeController,
+              ),
+              SizedBox(height: screenHeight * 0.01),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                          child: const AtualizarDadosPage(),
+                          type: PageTransitionType.bottomToTop,
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "Atualizar Meus Dados",
+                      style: GoogleFonts.oswald(
+                        color: themeProvider.getSpecialColor(),
+                        decoration: TextDecoration.underline,
+                        decorationColor: themeProvider.getSpecialColor(),
+                        fontWeight: FontWeight.bold,
+                        fontSize: MediaQuery.of(context).size.width * 0.05,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Padding buildTextField(BuildContext context,
       {required String labelText, required TextEditingController controller}) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
@@ -217,12 +218,12 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
               decoration: InputDecoration(
                 labelText: labelText,
                 labelStyle: GoogleFonts.poppins(
-                  color: Colors.black,
+                  color: themeProvider.getSpecialColor3(),
                   fontSize: screenWidth * 0.045,
                   fontWeight: FontWeight.bold,
                 ),
-                border: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: themeProvider.getBorderColor()),
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(

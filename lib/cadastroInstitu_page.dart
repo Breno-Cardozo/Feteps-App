@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'Apis/cidades.dart';
 import 'Apis/estados.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class CadastroInstituicaoPage extends StatefulWidget {
   @override
@@ -109,6 +111,8 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
 
     return Scaffold(
       appBar: AppBar(
@@ -127,15 +131,15 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
                     ),
                   );
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.arrow_back_sharp,
-                  color: Color(0xFF0E414F),
+                  color: themeProvider.getSpecialColor2(),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0, left: 10, right: 10),
                 child: Image.asset(
-                  'lib/assets/logo.png',
+                  logoAsset,
                   width: MediaQuery.of(context).size.width * 0.7,
                 ),
               )
@@ -180,7 +184,7 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
                       'Cadastre uma',
                       style: GoogleFonts.roboto(
                         fontSize: screenWidth * 0.05,
-                        color: Colors.black,
+                        color: themeProvider.getSpecialColor3(),
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -195,7 +199,7 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
                     'INSTITUIÇÃO',
                     style: GoogleFonts.roboto(
                       fontSize: screenWidth * 0.07,
-                      color: Colors.black,
+                      color: themeProvider.getSpecialColor3(),
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -247,7 +251,8 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   minimumSize: const Size(100, 39),
-                                  backgroundColor: Colors.white,
+                                  backgroundColor:
+                                      themeProvider.getSpecialColor4(),
                                   shadowColor: Colors.transparent,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
@@ -259,7 +264,7 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
                                 child: Text(
                                   "Cadastrar",
                                   style: GoogleFonts.oswald(
-                                    color: Colors.black,
+                                    color: themeProvider.getSpecialColor3(),
                                     fontWeight: FontWeight.bold,
                                     fontSize:
                                         MediaQuery.of(context).size.width *
@@ -284,6 +289,7 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
 
   Widget _buildTextField(double screenWidth, double screenHeight, String label,
       TextEditingController controller) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -294,15 +300,15 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
             decoration: InputDecoration(
               labelText: label,
               labelStyle: GoogleFonts.roboto(
-                color: Colors.black,
+                color: themeProvider.getSpecialColor3(),
                 fontWeight: FontWeight.bold,
                 fontSize: screenWidth * 0.04,
               ),
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
             ),
           ),
@@ -313,27 +319,32 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
 
   Widget _buildDropdownInstitutionType(
       double screenWidth, double screenHeight) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
           width: screenWidth * 0.8,
           child: DropdownButtonFormField<String>(
+            dropdownColor: Colors.grey,
             decoration: InputDecoration(
               labelText: 'Tipo da instituição:',
               labelStyle: GoogleFonts.roboto(
-                color: Colors.black,
+                color: themeProvider.getSpecialColor3(),
                 fontWeight: FontWeight.bold,
                 fontSize: screenWidth * 0.04,
               ),
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
             ),
-            icon: const Icon(Icons.arrow_drop_down_sharp),
+            icon: Icon(
+              Icons.arrow_drop_down_sharp,
+              color: themeProvider.getSpecialColor3(),
+            ),
             value: _selectedInstitutionType,
             onChanged: (String? newValue) {
               setState(() {
@@ -343,7 +354,10 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
             items: ['URBANA', 'RURAL'].map((String type) {
               return DropdownMenuItem<String>(
                 value: type,
-                child: Text(type),
+                child: Text(
+                  type,
+                  style: TextStyle(color: themeProvider.getSpecialColor3()),
+                ),
               );
             }).toList(),
             validator: (value) {
@@ -359,27 +373,32 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
   }
 
   Widget _buildDropdownEstado(double screenWidth, double screenHeight) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
           width: screenWidth * 0.8,
           child: DropdownButtonFormField<String>(
+            dropdownColor: Colors.grey,
             decoration: InputDecoration(
               labelText: 'Estado:',
               labelStyle: GoogleFonts.roboto(
-                color: Colors.black,
+                color: themeProvider.getSpecialColor3(),
                 fontWeight: FontWeight.bold,
                 fontSize: screenWidth * 0.04,
               ),
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
             ),
-            icon: const Icon(Icons.arrow_drop_down_sharp),
+            icon: Icon(
+              Icons.arrow_drop_down_sharp,
+              color: themeProvider.getSpecialColor3(),
+            ),
             value: _selectedEstado,
             onChanged: (String? newValue) {
               setState(() {
@@ -391,7 +410,10 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
             items: _estados.map((estado) {
               return DropdownMenuItem<String>(
                 value: estado.id,
-                child: Text(estado.nome),
+                child: Text(
+                  estado.nome,
+                  style: TextStyle(color: themeProvider.getSpecialColor3()),
+                ),
               );
             }).toList(),
             validator: (value) {
@@ -407,27 +429,32 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
   }
 
   Widget _buildDropdownCidade(double screenWidth, double screenHeight) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
           width: screenWidth * 0.8,
           child: DropdownButtonFormField<String>(
+            dropdownColor: Colors.grey,
             decoration: InputDecoration(
               labelText: 'Cidade:',
               labelStyle: GoogleFonts.roboto(
-                color: Colors.black,
+                color: themeProvider.getSpecialColor3(),
                 fontWeight: FontWeight.bold,
                 fontSize: screenWidth * 0.04,
               ),
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
               ),
             ),
-            icon: const Icon(Icons.arrow_drop_down_sharp),
+            icon: Icon(
+              Icons.arrow_drop_down_sharp,
+              color: themeProvider.getSpecialColor3(),
+            ),
             value: _cidadeController.text.isNotEmpty
                 ? _cidadeController.text
                 : null,
@@ -439,7 +466,10 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
             items: _cidadesDoEstado.map((cidade) {
               return DropdownMenuItem<String>(
                 value: cidade.nome,
-                child: Text(cidade.nome),
+                child: Text(
+                  cidade.nome,
+                  style: TextStyle(color: themeProvider.getSpecialColor3()),
+                ),
               );
             }).toList(),
             validator: (value) {

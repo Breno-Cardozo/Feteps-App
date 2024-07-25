@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class PatrocinadoresPage extends StatefulWidget {
   const PatrocinadoresPage({super.key});
@@ -46,83 +48,80 @@ class _PatrocinadoresPageState extends State<PatrocinadoresPage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(),
-        home: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar1_page(
-                screenWidth: screenWidth, destinationPage: SobrePage()),
-            endDrawer: const MenuPage(),
-            body: ListView(
-              children: [
-                Column(
+    return Scaffold(
+      appBar:
+          AppBar1_page(screenWidth: screenWidth, destinationPage: SobrePage()),
+      endDrawer: const MenuPage(),
+      body: ListView(
+        children: [
+          Column(
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(screenWidth * 0.05),
+                    child: Text(
+                      'Apoiadores',
+                      style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.08,
+                          fontWeight: FontWeight.bold,
+                          color: themeProvider.getSpecialColor2()),
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(screenWidth * 0.05),
+                    child: Text(
+                        'Apoiadores da Feira Tecnológica\ndo Centro Paula Souza!',
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.045,
+                            color: themeProvider.getSpecialColor3())),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'lib/assets/dinheiro.png',
+                    width: screenWidth * 0.55,
+                  )
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.02,
+                ),
+                child: const Divider(
+                  thickness: 1.5,
+                  color: Colors.grey,
+                ),
+              ),
+              for (int i = 0; i < patrocinadores.length; i += 2)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(screenWidth * 0.05),
-                          child: Text(
-                            'Apoiadores',
-                            style: GoogleFonts.poppins(
-                                fontSize: screenWidth * 0.08,
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 14, 56, 70)),
-                          ),
-                        )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(screenWidth * 0.05),
-                          child: Text(
-                              'Apoiadores da Feira Tecnológica\ndo Centro Paula Souza!',
-                              style: TextStyle(fontSize: screenWidth * 0.045)),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'lib/assets/dinheiro.png',
-                          width: screenWidth * 0.55,
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.02,
+                    if (i < patrocinadores.length)
+                      CardWidget(
+                        patrocinador: patrocinadores[i],
                       ),
-                      child: const Divider(
-                        thickness: 1.5,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    for (int i = 0; i < patrocinadores.length; i += 2)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (i < patrocinadores.length)
-                            CardWidget(
-                              patrocinador: patrocinadores[i],
-                            ),
-                          if (i + 1 < patrocinadores.length)
-                            CardWidget(
-                              patrocinador: patrocinadores[i + 1],
-                            ),
-                        ],
+                    if (i + 1 < patrocinadores.length)
+                      CardWidget(
+                        patrocinador: patrocinadores[i + 1],
                       ),
                   ],
                 ),
-              ],
-            ),
+            ],
           ),
-        ));
+        ],
+      ),
+    );
   }
 }
 

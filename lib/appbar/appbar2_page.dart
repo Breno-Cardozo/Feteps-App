@@ -3,6 +3,8 @@ import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class AppBar2_page extends StatelessWidget implements PreferredSizeWidget {
   final double screenWidth;
@@ -13,8 +15,9 @@ class AppBar2_page extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0,
       title: SizedBox(
         width: 400,
@@ -36,7 +39,7 @@ class AppBar2_page extends StatelessWidget implements PreferredSizeWidget {
                 child: Icon(
                   size: screenWidth * 0.075,
                   Icons.arrow_back_sharp,
-                  color: const Color(0xFF0E414F),
+                  color: themeProvider.getSpecialColor2(),
                 ),
               ),
             ),
@@ -47,7 +50,7 @@ class AppBar2_page extends StatelessWidget implements PreferredSizeWidget {
                 bottom: 15,
               ),
               child: Image.asset(
-                'lib/assets/logo.png',
+                logoAsset,
                 width: MediaQuery.of(context).size.width * 0.65,
               ),
             )
