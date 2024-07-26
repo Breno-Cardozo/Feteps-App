@@ -109,7 +109,7 @@ class _SobrePageState extends State<SobrePage> {
                         children: [
                           Padding(
                             padding: EdgeInsets.only(
-                              top: screenHeight * 0.04,
+                              top: screenHeight * 0.025,
                             ),
                             child: Image.asset(
                               'lib/assets/alunos.png',
@@ -183,7 +183,7 @@ class _SobrePageState extends State<SobrePage> {
                           children: [
                             Image.asset(
                               'lib/assets/calendario.png',
-                              width: MediaQuery.of(context).size.width * 0.55,
+                              width: MediaQuery.of(context).size.width * 0.41,
                             )
                           ],
                         ),
@@ -211,8 +211,10 @@ class EventTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      width: MediaQuery.of(context).size.width * 0.95,
+      width: MediaQuery.of(context).size.width * 0.9,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(2.5),
         border: Border.all(color: Colors.black),
@@ -224,40 +226,52 @@ class EventTable extends StatelessWidget {
         },
         children: [
           _buildTableRow(
-            '10/10/2023\n25/03/2024',
-            'Submissão dos Trabalhos [Prorrogado]',
-            Color(0xFFFFD35F),
-          ),
+              '10/10/2023\n25/03/2024',
+              'Submissão dos Trabalhos [Prorrogado]',
+              Color(0xFFFFD35F),
+              context),
+          _buildTableRow('22/04/2024', 'Início da Etapa de Avaliação',
+              Colors.white, context),
+          _buildTableRow('15/05/2024', 'Divulgação dos Finalistas',
+              Color(0xFFFFD35F), context),
           _buildTableRow(
-              '22/04/2024', 'Início da Etapa de Avaliação', Colors.white),
-          _buildTableRow(
-              '15/05/2024', 'Divulgação dos Finalistas', Color(0xFFFFD35F)),
-          _buildTableRow('19, 20, 21 e 22/08/2024',
-              'Feira Presencial: São Paulo Expo - Pavilhão 7', Colors.white),
+              '19, 20, 21 e 22/08/2024',
+              'Feira Presencial: São Paulo Expo - Pavilhão 7',
+              Colors.white,
+              context),
         ],
       ),
     );
   }
 
-  TableRow _buildTableRow(
-      String date, String description, Color backgroundColor) {
+  TableRow _buildTableRow(String date, String description,
+      Color backgroundColor, BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     return TableRow(
       children: [
         Container(
           color: backgroundColor,
-          padding: const EdgeInsets.all(20.66), // Aumenta a altura da linha
+          padding:
+              EdgeInsets.all(screenWidth * 0.042), // Aumenta a altura da linha
           child: Text(
             date,
             style: TextStyle(
-                fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold),
+                fontSize: screenWidth * 0.03,
+                color: Colors.black,
+                fontWeight: FontWeight.bold),
           ),
         ),
         Container(
           color: backgroundColor,
-          padding: const EdgeInsets.all(20.0), // Aumenta a altura da linha
+          padding:
+              EdgeInsets.all(screenWidth * 0.04), // Aumenta a altura da linha
           child: Text(
             description,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.031),
           ),
         ),
       ],

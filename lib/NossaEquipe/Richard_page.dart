@@ -109,7 +109,7 @@ class RichardPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Aluno da ETEC Prof Maria Cristina Medeiros',
+                        'Ex estudante da ETEC Prof Maria Cristina Medeiros',
                         style: GoogleFonts.inter(
                           fontSize: screenWidth * 0.048,
                           fontWeight: FontWeight.bold,
