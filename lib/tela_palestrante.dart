@@ -1,6 +1,8 @@
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 final TextStyle interTextStyle = GoogleFonts.inter();
 
@@ -18,6 +20,8 @@ class tela_palestrante extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    String logoAsset = themeProvider.getLogoAsset();
     final exhibitor = palestrante["exhibitors"] as List<dynamic>?;
 
     // Obtém todos os palestrantes a partir do totalP
@@ -38,7 +42,7 @@ class tela_palestrante extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 15.0, left: 10, right: 10),
                 child: Image.asset(
-                  'lib/assets/logo.png',
+                  logoAsset,
                   width: MediaQuery.of(context).size.width * 0.7,
                 ),
               ),
@@ -46,134 +50,141 @@ class tela_palestrante extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30),
-            child: Column(
+      body: exhibitor == null || exhibitor.isEmpty
+          ? Center(
+              child: Text(
+                'Nenhum palestrante encontrado',
+                style: GoogleFonts.inter(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+            )
+          : ListView(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      exhibitor != null && exhibitor.isNotEmpty
-                          ? exhibitor[0]["name_exhibitor"] ?? ''
-                          : '',
-                      style: GoogleFonts.inter(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 14, 56, 70),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            exhibitor[0]["name_exhibitor"] ?? '',
+                            style: GoogleFonts.inter(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 14, 56, 70),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (exhibitor != null &&
-                          exhibitor.isNotEmpty &&
-                          exhibitor[0]["photo"] != null &&
-                          exhibitor[0]["photo"].isNotEmpty)
-                        Image.network(
-                          exhibitor[0]["photo"],
-                          width: MediaQuery.of(context).size.width * 0.7,
-                        )
-                      else
-                        Image.asset(
-                          'lib/assets/placeholder.png',
-                          width: MediaQuery.of(context).size.width * 0.7,
-                        ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        palestrante["title"] ?? '',
-                        style: GoogleFonts.inter(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0E414F),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (exhibitor[0]["photo"] != null &&
+                                exhibitor[0]["photo"].isNotEmpty)
+                              Image.network(
+                                exhibitor[0]["photo"],
+                                width: MediaQuery.of(context).size.width * 0.7,
+                              )
+                            else
+                              Image.asset(
+                                'lib/assets/placeholder.png',
+                                width: MediaQuery.of(context).size.width * 0.7,
+                              ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Resumo:',
-                        style: GoogleFonts.inter(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 179, 0, 0),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Row(
+                          children: [
+                            Text(
+                              palestrante["title"] ?? '',
+                              style: GoogleFonts.inter(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF0E414F),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        _shortenText(palestrante["summary"] ?? '', 25),
-                        style: GoogleFonts.inter(
-                          fontSize: 14.0,
-                          color: Colors.black,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 20),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Resumo:',
+                              style: GoogleFonts.inter(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 179, 0, 0),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Outros Palestrantes:',
-                        style: GoogleFonts.inter(
-                          fontSize: 16.0,
-                          color: Color.fromARGB(255, 14, 56, 70),
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Row(
+                          children: [
+                            Text(
+                              _shortenText(palestrante["summary"] ?? '', 25),
+                              style: GoogleFonts.inter(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Divider(
-                    color: Colors.black38,
-                    thickness: 1,
-                  ),
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (var outroPalestrante in outrosPalestrantes)
-                        CardWidget(
-                          oPalestrante: outroPalestrante,
-                          list: lista,
-                          totalPP: totalP,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 20),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Outros Palestrantes:',
+                              style: GoogleFonts.inter(
+                                fontSize: 16.0,
+                                color: Color.fromARGB(255, 14, 56, 70),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Divider(
+                          color: Colors.black38,
+                          thickness: 1,
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (var outroPalestrante in outrosPalestrantes)
+                              CardWidget(
+                                oPalestrante: outroPalestrante,
+                                list: lista,
+                                totalPP: totalP,
+                              ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

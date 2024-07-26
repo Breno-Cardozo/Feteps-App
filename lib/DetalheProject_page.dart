@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // Atualização aqui
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -152,13 +154,13 @@ class DetalheProjectPage extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
           Text(
             'Resumo',
             style: GoogleFonts.inter(
               fontSize: screenWidth * 0.048,
               fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 208, 20, 20),
+              color: themeProvider.getSpecialColor(),
             ),
           ),
           const SizedBox(height: 10),
@@ -191,7 +193,10 @@ class DetalheProjectPage extends StatelessWidget {
             children: [
               // Itera sobre os expositores e cria um IconPerson para cada um
               for (var exhibitor in project['exhibitors'])
-                IconPerson(exhibitor: exhibitor),
+                IconPerson(
+                  exhibitor: exhibitor,
+                  numberOfExhibitors: project['exhibitors'].length,
+                ),
             ],
           ),
         ],
@@ -202,33 +207,132 @@ class DetalheProjectPage extends StatelessWidget {
 
 class IconPerson extends StatelessWidget {
   final Map<String, dynamic> exhibitor;
+  final int numberOfExhibitors; // Novo parâmetro
 
-  const IconPerson({super.key, required this.exhibitor});
+  const IconPerson(
+      {super.key, required this.exhibitor, required this.numberOfExhibitors});
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    double getPhotoSize(int numberOfPhotos) {
+      if (numberOfPhotos >= 4) {
+        return screenWidth * 0.12;
+      } else if (numberOfPhotos == 3) {
+        return screenWidth * 0.15;
+      } else if (numberOfPhotos == 2) {
+        return screenWidth * 0.18;
+      } else {
+        return screenWidth * 0.2;
+      }
+    }
+
     return Column(
       children: [
-        // Exibe a foto do expositor, ou um ícone padrão se não houver foto
-        exhibitor['photo'] != null && exhibitor['photo'].isNotEmpty
-            ? CircleAvatar(
-                backgroundImage: NetworkImage(exhibitor['photo']),
-                radius: 25,
-              )
-            : FaIcon(
-                FontAwesomeIcons.userCircle,
-                size: 50.0,
-                color: themeProvider.getSpecialColor(),
-              ),
-        const SizedBox(height: 8),
-        Text(
-          exhibitor['name_exhibitor'] ?? 'Nome Desconhecido',
-          style: GoogleFonts.inter(
-            fontSize: 14.4,
-            color: themeProvider.getSpecialColor(),
-          ),
+        GestureDetector(
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: themeProvider.getSpecialColor5(),
+                    title: Text(
+                      'Informações do Integrante:',
+                      style: GoogleFonts.poppins(
+                          color: const Color(0xFF0E414F),
+                          fontSize: screenWidth * 0.04,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    content: Container(
+                      height: screenHeight * 0.23,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(screenWidth * 0.02),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0E414F),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: ClipOval(
+                                    child: SvgPicture.network(
+                                      'https://api.dicebear.com/9.x/bottts/svg?seed=${exhibitor['name_exhibitor']} ',
+                                      width:
+                                          screenWidth * 0.2, // Corrigido aqui
+                                      placeholderBuilder: (context) =>
+                                          CircularProgressIndicator(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: screenWidth * 0.64,
+                                child: Text(
+                                  'Nome: ${exhibitor['name_exhibitor'] ?? 'Nome Desconhecido'}',
+                                  style: GoogleFonts.inter(
+                                    fontSize: screenWidth * 0.04,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: screenHeight * 0.015,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Tipo: ${exhibitor['user_type']?['description'] ?? 'Tipo não indentificado'}'),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          },
+          child: exhibitor['photo'] != null && exhibitor['photo'].isNotEmpty
+              ? CircleAvatar(
+                  backgroundImage: NetworkImage(exhibitor['photo']),
+                  radius: 25,
+                )
+              : Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0E414F),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: themeProvider.getBorderColor(),
+                      width: 1,
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: SvgPicture.network(
+                      'https://api.dicebear.com/9.x/bottts/svg?seed=${exhibitor['name_exhibitor']} ',
+                      width: getPhotoSize(numberOfExhibitors), // Corrigido aqui
+                      placeholderBuilder: (context) =>
+                          CircularProgressIndicator(),
+                    ),
+                  ),
+                ),
         ),
+        const SizedBox(height: 8),
       ],
     );
   }

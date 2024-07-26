@@ -155,6 +155,10 @@ class _PerfilPageState extends State<PerfilPage> {
   Widget _buildUserInfo(double screenHeight, double screenWidth) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     double fontSize = screenWidth * 0.065;
+    String displayedNomeUsuario = nomeUsuario.length > 20
+        ? '${nomeUsuario.substring(0, 16)}...'
+        : nomeUsuario;
+
     if (nomeUsuario.length > 15) {
       int excessLength = nomeUsuario.length - 15;
       double reductionFactor = 0.005 * excessLength;
@@ -162,14 +166,15 @@ class _PerfilPageState extends State<PerfilPage> {
     }
 
     return SizedBox(
-      height: screenHeight * 0.18,
+      height: screenHeight * 0.15,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: screenWidth * 0.06),
+            padding: EdgeInsets.only(left: screenWidth * 0.025),
             child: SvgPicture.network(
               'https://api.dicebear.com/9.x/bottts/svg?seed=$nomeUsuario',
-              height: screenWidth * 0.3,
+              height: screenHeight * 0.15,
               width: screenWidth * 0.3,
               placeholderBuilder: (context) => CircularProgressIndicator(),
             ),
@@ -191,7 +196,7 @@ class _PerfilPageState extends State<PerfilPage> {
                         ),
                       ),
                       TextSpan(
-                        text: nomeUsuario,
+                        text: displayedNomeUsuario,
                         style: GoogleFonts.poppins(
                           fontSize: fontSize,
                           color: const Color(0xFFD4A03D),
@@ -213,7 +218,7 @@ class _PerfilPageState extends State<PerfilPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: EdgeInsets.only(
-          left: screenWidth * 0.06, bottom: screenHeight * 0.05),
+          left: screenWidth * 0.06, bottom: screenHeight * 0.035),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -379,7 +384,7 @@ class _PerfilPageState extends State<PerfilPage> {
 
   Widget _buildDocumentsImage(double screenWidth, double screenHeight) {
     return Padding(
-      padding: EdgeInsets.only(top: screenHeight * 0.02),
+      padding: EdgeInsets.only(top: screenHeight * 0.01),
       child: Image.asset(
         'lib/assets/documentos.png',
         width: screenWidth * 0.5,
@@ -394,7 +399,7 @@ class _PerfilPageState extends State<PerfilPage> {
         showPrivacyPolicy();
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
         child: Text(
           'Política de Privacidade',
           style: GoogleFonts.poppins(

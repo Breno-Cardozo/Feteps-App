@@ -41,7 +41,9 @@ class _MenuPageState extends State<MenuPage> {
     'Muito escuro? Clique aqui para alterar o tema',
     'Os palestrantes de hj são Incriveis!',
     'Confira nossos apoiadores',
-    'Nossa equipe fez o melhor app para vc!'
+    'Nossa equipe fez o melhor app para vc!',
+    'Não esqueça de votar nos projetos!',
+    'Confira a aba "Sobre" para conhcer nossa equipe'
   ];
 
   @override

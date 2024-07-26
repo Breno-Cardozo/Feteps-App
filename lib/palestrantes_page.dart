@@ -8,19 +8,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'global.dart';
+import 'package:provider/provider.dart';
+import 'package:feteps/Temas/theme_provider.dart';
 
 class PalestrantesPage extends StatelessWidget {
   const PalestrantesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-         ),
-      home: const Scaffold(
-        body: PalestrantesHomePage(),
-      ),
+    return Scaffold(
+      body: PalestrantesHomePage(),
     );
   }
 }
@@ -90,8 +87,11 @@ class PalestrantesHomeState extends State<PalestrantesHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      appBar: AppBar1_page(screenWidth: MediaQuery.of(context).size.width * 1.0, destinationPage: SobrePage()),
+      appBar: AppBar1_page(
+          screenWidth: MediaQuery.of(context).size.width * 1.0,
+          destinationPage: SobrePage()),
       endDrawer: const MenuPage(),
       body: _isLoading
           ? const Center(
@@ -103,14 +103,15 @@ class PalestrantesHomeState extends State<PalestrantesHomePage> {
                     Row(
                       children: [
                         Padding(
-                           padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                          padding: EdgeInsets.all(
+                              MediaQuery.of(context).size.width * 0.05),
                           child: Text(
                             'Palestrantes',
                             style: GoogleFonts.poppins(
                               fontSize:
                                   MediaQuery.of(context).size.width * 0.08,
                               fontWeight: FontWeight.bold,
-                              color: const Color.fromARGB(255, 14, 56, 70),
+                              color: themeProvider.getSpecialColor2(),
                             ),
                           ),
                         )
@@ -125,6 +126,7 @@ class PalestrantesHomeState extends State<PalestrantesHomePage> {
   }
 
   Widget _buildPalestranteSections() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _palestrantesPorData.entries.map((entry) {
@@ -144,7 +146,7 @@ class PalestrantesHomeState extends State<PalestrantesHomePage> {
                 displayDate,
                 style: GoogleFonts.inter(
                   fontSize: MediaQuery.of(context).size.width * 0.07,
-                  color: const Color.fromARGB(255, 61, 20, 10),
+                  color: themeProvider.getSpecialColor2(),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -223,13 +225,13 @@ class CardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.45,
-            height: MediaQuery.of(context).size.height * 0.35,
+            width: MediaQuery.of(context).size.width * 0.5,
+            height: MediaQuery.of(context).size.height * 0.3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.015),
-                if (exhibitor["photo"] != null && exhibitor["photo"].isNotEmpty)
+                if (exhibitor != null && exhibitor["photo"] != null)
                   Container(
                     height: MediaQuery.of(context).size.height * 0.185,
                     decoration: BoxDecoration(
@@ -244,7 +246,7 @@ class CardWidget extends StatelessWidget {
                       errorBuilder: (context, error, stackTrace) {
                         return Image.asset(
                           'lib/assets/Rectangle.png',
-                          width: MediaQuery.of(context).size.width * 0.42,
+                          width: MediaQuery.of(context).size.width * 0.4,
                         );
                       },
                     ),
@@ -252,7 +254,7 @@ class CardWidget extends StatelessWidget {
                 else
                   Image.asset(
                     'lib/assets/Rectangle.png',
-                    width: MediaQuery.of(context).size.width * 0.42,
+                    width: MediaQuery.of(context).size.width * 0.4,
                   ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.005),
                 exhibitor != null
