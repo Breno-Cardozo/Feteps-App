@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flip_card/flip_card.dart'; // Adicionando o pacote flip_card
 import 'package:feteps/Temas/theme_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetalheProjectPage extends StatelessWidget {
   final Map<String, dynamic> project;
@@ -65,6 +66,7 @@ class DetalheProjectPage extends StatelessWidget {
         project['ods']['id_ods']?.toString() ?? 'ID ODS Não Disponível';
     String nameOds =
         project['ods']['name_ods']?.toString() ?? 'Nome ODS Não Disponível';
+    String link = project['video_url'] ?? 'Link Não Disponivel';
 
     return Scaffold(
       appBar: AppBar(
@@ -187,14 +189,20 @@ class DetalheProjectPage extends StatelessWidget {
           SizedBox(
             height: screenHeight * 0.025,
           ),
-          Text(
-            project['video_url'] ?? 'Este projeto não possuí um Link.',
-            style: GoogleFonts.inter(
-              fontSize: screenWidth * 0.042,
-              fontWeight: FontWeight.bold,
-              color: themeProvider.getSpecialColor3(),
+          InkWell(
+            onTap: () async {
+              _launchURL(link);
+            },
+            child: Text(
+              project['video_url'] ?? 'Este projeto não possuí um Link.',
+              style: GoogleFonts.roboto(
+                fontSize: screenWidth * 0.035,
+                fontWeight: FontWeight.bold,
+                color: Color(
+                    0xFFFFD35F), // Define a cor como azul para indicar que é um link
+              ),
+              textAlign: TextAlign.justify,
             ),
-            textAlign: TextAlign.justify,
           ),
           Divider(
             color: themeProvider.getSpecialColor3(),
@@ -328,3 +336,16 @@ class FlipCardPerson extends StatelessWidget {
     );
   }
 }
+
+Future<void> _launchURL(String url) async {
+  if (url.isEmpty) {
+    print('URL is empty');
+    return;
+  }
+
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri)) {
+    print('Could not launch $url');
+  }
+}
+

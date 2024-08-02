@@ -12,6 +12,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SobrePage extends StatefulWidget {
   const SobrePage({super.key});
@@ -35,6 +36,7 @@ class _SobrePageState extends State<SobrePage> {
   void _onImageTap(int index) {
     switch (index) {
       case 0:
+        _launchURL('http://feteps.cpscetec.com.br/feteps.php');
         break;
       case 1:
         Navigator.pushReplacement(
@@ -344,5 +346,17 @@ class EventTable extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+Future<void> _launchURL(String url) async {
+  if (url.isEmpty) {
+    print('URL is empty');
+    return;
+  }
+
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri)) {
+    print('Could not launch $url');
   }
 }
