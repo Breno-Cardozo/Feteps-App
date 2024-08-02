@@ -54,6 +54,8 @@ dependencies:
   jwt_decoder: ^2.0.1
   url_launcher: ^6.0.20
   flutter_svg: ^2.0.9
+  flip_card: ^0.7.0
+  carousel_slider: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +96,13 @@ flutter:
     - 'lib/assets/logo3.png'
     - 'lib/assets/alunos.png'
     - 'lib/assets/banner2.png'
+    - 'lib/assets/banner1.png'
+    - 'lib/assets/banner3.png'
+    - 'lib/assets/banner4.png'
+    - 'lib/assets/banner5.png'
+    - 'lib/assets/bannermascote.png'
+    - 'lib/assets/Fet.png'
+    - 'lib/assets/Teps.png'
     - 'lib/assets/estudantes.png'
     - 'lib/assets/Rectangle.png'
     - 'lib/assets/calendario.png'
@@ -122,7 +131,23 @@ flutter:
     - 'lib/assets/equipe/anderson.png'
     - 'lib/assets/equipe/richard.jpg'
     - 'lib/assets/equipe/gabriel.jpg'
-    - 'lib/assets/ods1.png'
+    - 'lib/assets/ods/ods1.png'
+    - 'lib/assets/ods/ods2.png'
+    - 'lib/assets/ods/ods3.png'
+    - 'lib/assets/ods/ods4.png'
+    - 'lib/assets/ods/ods5.png'
+    - 'lib/assets/ods/ods6.png'
+    - 'lib/assets/ods/ods7.png'
+    - 'lib/assets/ods/ods8.png'
+    - 'lib/assets/ods/ods9.png'
+    - 'lib/assets/ods/ods10.png'
+    - 'lib/assets/ods/ods11.png'
+    - 'lib/assets/ods/ods12.png'
+    - 'lib/assets/ods/ods13.png'
+    - 'lib/assets/ods/ods14.png'
+    - 'lib/assets/ods/ods15.png'
+    - 'lib/assets/ods/ods16.png'
+    - 'lib/assets/ods/ods17.png'
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

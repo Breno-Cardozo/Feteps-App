@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:feteps/loginfeteps_page.dart';
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:feteps/telainicial_page.dart';
@@ -22,16 +24,35 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
   final _emailController = TextEditingController();
   final _cpfController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = '';
 
   final snackBar = const SnackBar(
     content: Text(
-      'E-mail ou Cpf são inválidos',
+      'E-mail ou CPF são inválidos',
       textAlign: TextAlign.center,
     ),
     backgroundColor: Colors.redAccent,
   );
+
+  final passwordSnackBar = const SnackBar(
+    content: Text(
+      'As novas senhas não coincidem',
+      textAlign: TextAlign.center,
+    ),
+    backgroundColor: Colors.redAccent,
+  );
+
+  final successSnackBar = SnackBar(
+      content: Text(
+        'Senha alterada com sucesso',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.roboto(
+            color: Colors.black, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: const Color(0xFFFFD35F),
+      duration: const Duration(seconds: 3));
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +66,8 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () {
+              WillPopScope(
+                onWillPop: () async {
                   Navigator.pushReplacement(
                     context,
                     PageTransition(
@@ -54,11 +75,23 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                       type: PageTransitionType.topToBottom,
                     ),
                   );
+                  return false;
                 },
-                icon: Icon(
-                  size: MediaQuery.of(context).size.width * 0.075,
-                  Icons.arrow_back_sharp,
-                  color: themeProvider.getSpecialColor2(),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        child: LoginFetepsPage(),
+                        type: PageTransitionType.topToBottom,
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    size: MediaQuery.of(context).size.width * 0.075,
+                    Icons.arrow_back_sharp,
+                    color: themeProvider.getSpecialColor2(),
+                  ),
                 ),
               ),
               Padding(
@@ -183,7 +216,6 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                               ),
                             ),
                             child: TextFormField(
-                              obscureText: true,
                               decoration: InputDecoration(
                                 labelText: 'CPF',
                                 labelStyle: GoogleFonts.roboto(
@@ -194,7 +226,11 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                                 ),
                               ),
                               controller: _cpfController,
-                              keyboardType: TextInputType.text,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9]')),
+                              ],
+                              keyboardType: TextInputType.number,
                               validator: (senha) {
                                 if (senha == null || senha.isEmpty) {
                                   return 'Por favor, digite a seu cpf';
@@ -234,6 +270,45 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                                 ),
                               ),
                               controller: _passwordController,
+                              keyboardType: TextInputType.text,
+                              validator: (senha) {
+                                if (senha == null || senha.isEmpty) {
+                                  return 'Por favor, digite a sua nova senha';
+                                } else if (senha.length < 3) {
+                                  return 'Por favor, digite uma senha maior de 3 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              inputDecorationTheme: InputDecorationTheme(
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                labelStyle: GoogleFonts.roboto(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ),
+                            child: TextFormField(
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                labelText: 'Confirmar nova senha',
+                                labelStyle: GoogleFonts.roboto(
+                                  color: themeProvider.getSpecialColor3(),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                ),
+                              ),
+                              controller: _newPasswordController,
                               keyboardType: TextInputType.text,
                               validator: (senha) {
                                 if (senha == null || senha.isEmpty) {
@@ -319,6 +394,15 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
       _errorMessage = '';
     });
 
+    if (_newPasswordController.text != _passwordController.text) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'As novas senhas não coincidem';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(passwordSnackBar);
+      return;
+    }
+
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(
@@ -336,22 +420,28 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
       print('Response data: $responseData');
       if (responseData['type'] == 'success' &&
           responseData['message'] == 'Password updated') {
-        Navigator.pushAndRemoveUntil(
-          context,
-          PageTransition(
+        ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            PageTransition(
               child: const LoginFetepsPage(),
-              type: PageTransitionType.topToBottom),
-          (route) => false,
-        );
+              type: PageTransitionType.topToBottom,
+            ),
+            (route) => false,
+          );
+        });
       } else {
         setState(() {
           _errorMessage = responseData['message'];
         });
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } else {
       setState(() {
         _errorMessage = 'Falha ao alterar a senha';
       });
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
 
     setState(() {

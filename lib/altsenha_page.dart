@@ -1,6 +1,7 @@
 import 'package:feteps/appbar/appbar2_page.dart';
 import 'package:feteps/global.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,7 +69,16 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
       print('Response data: $responseData');
       if (responseData['type'] == 'success' &&
           responseData['message'] == 'Password updated') {
-        Future.delayed(const Duration(seconds: 3), () {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              'Senha alterada com sucesso',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                  color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: const Color(0xFFFFD35F),
+            duration: const Duration(seconds: 3)));
+        Future.delayed(const Duration(seconds: 2), () {
           _logout();
         });
       } else {
@@ -141,6 +151,10 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                     SizedBox(
                       width: screenWidth * 0.85,
                       child: TextFormField(
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
+                        keyboardType: TextInputType.number,
                         controller: _currentPasswordController,
                         decoration: InputDecoration(
                           labelText: 'Digite seu cpf:',
@@ -159,7 +173,6 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 width: screenWidth * 0.005),
                           ),
                         ),
-                        obscureText: true,
                       ),
                     ),
                   ],

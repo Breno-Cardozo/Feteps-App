@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart'; // Atualização aqui
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flip_card/flip_card.dart'; // Adicionando o pacote flip_card
 import 'package:feteps/Temas/theme_provider.dart';
 
 class DetalheProjectPage extends StatelessWidget {
@@ -117,7 +118,7 @@ class DetalheProjectPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.03),
           if (bannerUrl != null && bannerUrl.isNotEmpty)
             Container(
               height: screenHeight * 0.25,
@@ -154,7 +155,7 @@ class DetalheProjectPage extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 30),
+          SizedBox(height: screenHeight * 0.035),
           Text(
             'Resumo',
             style: GoogleFonts.inter(
@@ -163,11 +164,34 @@ class DetalheProjectPage extends StatelessWidget {
               color: themeProvider.getSpecialColor(),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: screenHeight * 0.025),
           Text(
             project['project_abstract'] ?? 'Este projeto não possuí um resumo.',
             style: GoogleFonts.inter(
               fontSize: screenWidth * 0.042,
+              color: themeProvider.getSpecialColor3(),
+            ),
+            textAlign: TextAlign.justify,
+          ),
+          SizedBox(
+            height: screenHeight * 0.03,
+          ),
+          Text(
+            'Link do Youtube',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.048,
+              fontWeight: FontWeight.bold,
+              color: themeProvider.getSpecialColor(),
+            ),
+          ),
+          SizedBox(
+            height: screenHeight * 0.025,
+          ),
+          Text(
+            project['video_url'] ?? 'Este projeto não possuí um Link.',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.042,
+              fontWeight: FontWeight.bold,
               color: themeProvider.getSpecialColor3(),
             ),
             textAlign: TextAlign.justify,
@@ -186,18 +210,18 @@ class DetalheProjectPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Wrap(
-            spacing: 20.0,
-            runSpacing: 20.0,
-            alignment: WrapAlignment.spaceAround,
-            children: [
-              // Itera sobre os expositores e cria um IconPerson para cada um
-              for (var exhibitor in project['exhibitors'])
-                IconPerson(
+          SizedBox(
+            height: screenHeight * 0.25, // Altura máxima dos FlipCards
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: project['exhibitors'].length,
+              itemBuilder: (context, index) {
+                var exhibitor = project['exhibitors'][index];
+                return FlipCardPerson(
                   exhibitor: exhibitor,
-                  numberOfExhibitors: project['exhibitors'].length,
-                ),
-            ],
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -205,12 +229,14 @@ class DetalheProjectPage extends StatelessWidget {
   }
 }
 
-class IconPerson extends StatelessWidget {
+class FlipCardPerson extends StatelessWidget {
   final Map<String, dynamic> exhibitor;
-  final int numberOfExhibitors; // Novo parâmetro
+  // Novo parâmetro
 
-  const IconPerson(
-      {super.key, required this.exhibitor, required this.numberOfExhibitors});
+  const FlipCardPerson({
+    super.key,
+    required this.exhibitor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -218,122 +244,87 @@ class IconPerson extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    double getPhotoSize(int numberOfPhotos) {
-      if (numberOfPhotos >= 4) {
-        return screenWidth * 0.12;
-      } else if (numberOfPhotos == 3) {
-        return screenWidth * 0.15;
-      } else if (numberOfPhotos == 2) {
-        return screenWidth * 0.18;
-      } else {
-        return screenWidth * 0.2;
-      }
-    }
-
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    backgroundColor: themeProvider.getSpecialColor5(),
-                    title: Text(
-                      'Informações do Integrante:',
-                      style: GoogleFonts.poppins(
-                          color: const Color(0xFF0E414F),
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    content: Container(
-                      height: screenHeight * 0.23,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(screenWidth * 0.02),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF0E414F),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: ClipOval(
-                                    child: SvgPicture.network(
-                                      'https://api.dicebear.com/9.x/bottts/svg?seed=${exhibitor['name_exhibitor']} ',
-                                      width:
-                                          screenWidth * 0.2, // Corrigido aqui
-                                      placeholderBuilder: (context) =>
-                                          CircularProgressIndicator(),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: screenWidth * 0.64,
-                                child: Text(
-                                  'Nome: ${exhibitor['name_exhibitor'] ?? 'Nome Desconhecido'}',
-                                  style: GoogleFonts.inter(
-                                    fontSize: screenWidth * 0.04,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: screenHeight * 0.015,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                  'Tipo: ${exhibitor['user_type']?['description'] ?? 'Tipo não indentificado'}'),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                });
-          },
-          child: exhibitor['photo'] != null && exhibitor['photo'].isNotEmpty
-              ? CircleAvatar(
-                  backgroundImage: NetworkImage(exhibitor['photo']),
-                  radius: 25,
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0E414F),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: themeProvider.getBorderColor(),
-                      width: 1,
-                    ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+      child: FlipCard(
+        direction: FlipDirection.HORIZONTAL, // Direção do flip
+        front: Container(
+          width: screenWidth * 0.4,
+          height: screenHeight * 0.2,
+          padding: const EdgeInsets.only(top: 30.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: themeProvider.getSpecialColor2(),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Column(
+            children: [
+              ClipOval(
+                child: SvgPicture.network(
+                  'https://api.dicebear.com/9.x/bottts/svg?seed=${exhibitor['name_exhibitor']}',
+                  width: screenWidth * 0.2,
+                  placeholderBuilder: (context) => CircularProgressIndicator(),
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              Container(
+                width: screenWidth * 0.35,
+                child: Text(
+                  exhibitor['name_exhibitor'],
+                  style: GoogleFonts.inter(
+                    fontSize: screenWidth * 0.03,
+                    fontWeight: FontWeight.bold,
+                    color: themeProvider.getSpecialColor2(),
                   ),
-                  child: ClipOval(
-                    child: SvgPicture.network(
-                      'https://api.dicebear.com/9.x/bottts/svg?seed=${exhibitor['name_exhibitor']} ',
-                      width: getPhotoSize(numberOfExhibitors), // Corrigido aqui
-                      placeholderBuilder: (context) =>
-                          CircularProgressIndicator(),
-                    ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+        back: Container(
+          width: screenWidth * 0.4,
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: themeProvider.getSpecialColor2(),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: themeProvider.getSpecialColor2(),
+                    width: 2,
                   ),
                 ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'lib/assets/fundo.png',
+                    width: MediaQuery.of(context).size.width * 0.25,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                '${exhibitor['user_type']?['description'] ?? 'Tipo não indentificado'}',
+                style: GoogleFonts.inter(
+                  fontSize: screenWidth * 0.034,
+                  color: themeProvider.getSpecialColor3(),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 8),
-      ],
+      ),
     );
   }
 }

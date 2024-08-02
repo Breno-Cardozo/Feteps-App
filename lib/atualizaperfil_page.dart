@@ -64,7 +64,16 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
       final responseData = jsonDecode(await response.stream.bytesToString());
       if (responseData['type'] == 'success' &&
           responseData['message'] == 'Operation completed successfully!') {
-        Future.delayed(const Duration(seconds: 3), () {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              'Dados atualizados com sucesso',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                  color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: const Color(0xFFFFD35F),
+            duration: const Duration(seconds: 3)));
+        Future.delayed(const Duration(seconds: 2), () {
           _deucerto();
         });
         return true;
@@ -93,14 +102,6 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
       (route) => false,
     );
   }
-
-  final snackBar = const SnackBar(
-    content: Text(
-      'Dados atualizados com sucesso',
-      textAlign: TextAlign.center,
-    ),
-    backgroundColor: Colors.redAccent,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +204,7 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
                                   bool dadosAtualizados =
                                       await _atualizarDados();
                                   if (dadosAtualizados) {
-                                    _deucerto;
+                                    _deucerto();
                                   }
                                 },
                           style: ElevatedButton.styleFrom(

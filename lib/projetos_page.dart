@@ -69,7 +69,7 @@ class ProjetosHomeState extends State<ProjetosHomePage> {
   Future<void> _fetchProjects(int ods) async {
     final response = await http.get(
       Uri.parse(GlobalPageState.Url +
-          '/appfeteps/pages/Project/get.php?id_ods=$ods&limit=50'),
+          '/appfeteps/pages/Project/get.php?id_ods=$ods&limit=500'),
     );
 
     if (response.statusCode == 200) {
@@ -126,32 +126,6 @@ class ProjetosHomeState extends State<ProjetosHomePage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                  bottom: screenHeight * 0.03,
-                  left: screenWidth * 0.06,
-                  right: screenWidth * 0.06,
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: _filterProjects,
-                  decoration: const InputDecoration(
-                    hintText: 'Pesquise um projeto...',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 3.0,
-                        color: Color.fromARGB(255, 255, 209, 64),
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Color.fromARGB(255, 255, 209, 64),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
                 padding: EdgeInsets.all(screenWidth * 0.05),
                 child: Text(
                   'Selecione uma ODS:',
@@ -178,12 +152,8 @@ class ProjetosHomeState extends State<ProjetosHomePage> {
                   ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.04),
-                child: const Divider(
-                  color: Colors.grey,
-                  thickness: 1.5,
-                ),
+              SizedBox(
+                height: screenHeight * 0.05,
               ),
               Padding(
                 padding: EdgeInsets.all(screenWidth * 0.05),
@@ -195,6 +165,38 @@ class ProjetosHomeState extends State<ProjetosHomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
+              SizedBox(
+                height: screenHeight * 0.02,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: screenHeight * 0.03,
+                  left: screenWidth * 0.06,
+                  right: screenWidth * 0.06,
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: _filterProjects,
+                  decoration: const InputDecoration(
+                    hintText: 'Pesquise um projeto...',
+                    hintStyle: TextStyle(color: Colors.grey),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 3.0,
+                        color: Color.fromARGB(255, 255, 209, 64),
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Color.fromARGB(255, 255, 209, 64),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: screenHeight * 0.02,
               ),
               _isLoading
                   ? const Center(
@@ -291,41 +293,73 @@ class CardWidget extends StatelessWidget {
   static List<String> texto(int ods) {
     switch (ods) {
       case 1:
-        return ['1', 'Erradicação da pobreza'];
+        return ['1', 'Erradicação da pobreza', 'lib/assets/ods/ods1.png'];
       case 2:
-        return ['2', 'Fome zero e agricultura sustentável'];
+        return [
+          '2',
+          'Fome zero e agricultura sustentável',
+          'lib/assets/ods/ods2.png'
+        ];
       case 3:
-        return ['3', 'Saúde e bem-estar'];
+        return ['3', 'Saúde e bem-estar', 'lib/assets/ods/ods3.png'];
       case 4:
-        return ['4', 'Educação de qualidade'];
+        return ['4', 'Educação de qualidade', 'lib/assets/ods/ods4.png'];
       case 5:
-        return ['5', 'Igualdade de gênero'];
+        return ['5', 'Igualdade de gênero', 'lib/assets/ods/ods5.png'];
       case 6:
-        return ['6', 'Água potável e saneamento'];
+        return ['6', 'Água potável e saneamento', 'lib/assets/ods/ods6.png'];
       case 7:
-        return ['7', 'Energia acessível e limpa'];
+        return ['7', 'Energia acessível e limpa', 'lib/assets/ods/ods7.png'];
       case 8:
-        return ['8', 'Trabalho decente e crescimento econômico'];
+        return [
+          '8',
+          'Trabalho decente e crescimento econômico',
+          'lib/assets/ods/ods8.png'
+        ];
       case 9:
-        return ['9', 'Indústria, inovação e infraestrutura'];
+        return [
+          '9',
+          'Indústria, inovação e infraestrutura',
+          'lib/assets/ods/ods9.png'
+        ];
       case 10:
-        return ['10', 'Redução das desigualdades'];
+        return ['10', 'Redução das desigualdades', 'lib/assets/ods/ods10.png'];
       case 11:
-        return ['11', 'Cidades e comunidades sustentáveis'];
+        return [
+          '11',
+          'Cidades e comunidades sustentáveis',
+          'lib/assets/ods/ods11.png'
+        ];
       case 12:
-        return ['12', 'Consumo e produção responsáveis'];
+        return [
+          '12',
+          'Consumo e produção responsáveis',
+          'lib/assets/ods/ods12.png'
+        ];
       case 13:
-        return ['13', 'Ação contra a mudança global do clima'];
+        return [
+          '13',
+          'Ação contra a mudança global do clima',
+          'lib/assets/ods/ods13.png'
+        ];
       case 14:
-        return ['14', 'Vida na água'];
+        return ['14', 'Vida na água', 'lib/assets/ods/ods14.png'];
       case 15:
-        return ['15', 'Vida terrestre'];
+        return ['15', 'Vida terrestre', 'lib/assets/ods/ods15.png'];
       case 16:
-        return ['16', 'Paz, justiça e instituições eficazes'];
+        return [
+          '16',
+          'Paz, justiça e instituições eficazes',
+          'lib/assets/ods/ods16.png'
+        ];
       case 17:
-        return ['17', 'Parcerias e meios de implementação'];
+        return [
+          '17',
+          'Parcerias e meios de implementação',
+          'lib/assets/ods/ods17.png'
+        ];
       default:
-        return ['?', 'Meta desconhecida'];
+        return ['?', 'Meta desconhecida', 'lib/assets/default.png'];
     }
   }
 
@@ -341,6 +375,7 @@ class CardWidget extends StatelessWidget {
       0.5,
     ) as AlignmentGeometry;
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -360,9 +395,7 @@ class CardWidget extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? cor(ods).withOpacity(0.3)
-                        : themeProvider.getSpecialColor4(),
+                    color: cor(ods),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15),
@@ -372,37 +405,24 @@ class CardWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Align(
-                  alignment: Alignment.topLeft,
+              Align(
+                alignment: intermediateAlignment,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      bottom: screenHeight * 0.085,
+                      left: screenWidth * 0.005,
+                      right: screenWidth * 0.005),
                   child: Container(
-                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: cor(ods),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      "ODS ${texto(ods)[0]}",
-                      style: GoogleFonts.inter(
-                        fontSize: screenWidth * 0.025,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Align(
-                  alignment: intermediateAlignment,
-                  child: Text(
-                    texto(ods)[1],
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.bold,
-                      fontSize: screenWidth * 0.042,
-                      color: themeProvider.getSpecialColor3(),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15),
+                        ),
+                        border: Border.all(
+                            color: themeProvider.getBorderColor(), width: 0.3)),
+                    child: Image.asset(
+                      texto(ods)[2],
+                      width: screenWidth * 1.0,
                     ),
                   ),
                 ),

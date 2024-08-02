@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:feteps/esquecisenha_page.dart';
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:feteps/telainicial_page.dart';
@@ -43,20 +44,32 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () {
+              WillPopScope(
+                onWillPop: () async {
                   Navigator.pushReplacement(
                     context,
                     PageTransition(
-                      child: const TelaInicialPage(),
+                      child: TelaInicialPage(),
                       type: PageTransitionType.leftToRightWithFade,
                     ),
                   );
+                  return false;
                 },
-                icon: Icon(
-                  size: MediaQuery.of(context).size.width * 0.075,
-                  Icons.arrow_back_sharp,
-                  color: themeProvider.getSpecialColor2(),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        child: const TelaInicialPage(),
+                        type: PageTransitionType.leftToRightWithFade,
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    size: MediaQuery.of(context).size.width * 0.075,
+                    Icons.arrow_back_sharp,
+                    color: themeProvider.getSpecialColor2(),
+                  ),
                 ),
               ),
               Padding(

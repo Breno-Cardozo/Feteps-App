@@ -13,6 +13,7 @@ import 'package:feteps/NossaEquipe/Gabriel_page.dart';
 import 'package:feteps/NossaEquipe/Richard_page.dart';
 import 'package:feteps/sobrenos_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -132,22 +133,34 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () {
+              WillPopScope(
+                onWillPop: () async {
                   Navigator.pushReplacement(
                     context,
                     PageTransition(
-                      child: const SobreNosPage(),
-                      type: PageTransitionType.bottomToTop,
-                    ),
+                        child: SobreNosPage(),
+                        type: PageTransitionType.size,
+                        alignment: Alignment.center),
                   );
+                  return false;
                 },
-                icon: Padding(
-                  padding: const EdgeInsets.only(bottom: 8, right: 15),
-                  child: Icon(
-                    size: screenWidth * 0.075,
-                    Icons.arrow_back_sharp,
-                    color: themeProvider.getSpecialColor2(),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        child: const SobreNosPage(),
+                        type: PageTransitionType.bottomToTop,
+                      ),
+                    );
+                  },
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: 8, right: 15),
+                    child: Icon(
+                      size: screenWidth * 0.075,
+                      Icons.arrow_back_sharp,
+                      color: themeProvider.getSpecialColor2(),
+                    ),
                   ),
                 ),
               ),

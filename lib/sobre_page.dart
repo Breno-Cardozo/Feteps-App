@@ -1,11 +1,14 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:feteps/Mascote_page.dart';
 import 'package:feteps/participantes_page.dart';
 import 'package:feteps/Menu_Page.dart';
+import 'package:feteps/patrocinadores_page.dart';
+import 'package:feteps/projetos_page.dart';
 import 'package:feteps/sobrenos_page.dart';
 import 'package:feteps/telainicial_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
@@ -29,12 +32,47 @@ class _SobrePageState extends State<SobrePage> {
       'Nas Etecs, mais de 226 mil estudantes estão matriculados nos Ensinos Médio, Técnico integrado ao Médio e no Ensino Técnico, incluindo habilitações nas modalidades presencial, semipresencial, online, Educação de Jovens e Adultos (EJA) e especialização técnica. As Etecs oferecem 224 cursos, voltados a todos os setores produtivos públicos e privados.\n\n'
       'Já as Fatecs atendem mais de 96 mil alunos matriculados em 86 cursos de graduação tecnológica, em diversas áreas, como Construção Civil, Mecânica, Informática, Tecnologia da Informação, Turismo, entre outras.';
 
+  void _onImageTap(int index) {
+    switch (index) {
+      case 0:
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+              child: const ProjetosHomePage(),
+              type: PageTransitionType.size,
+              alignment: Alignment.center),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+              child: const PatrocinadoresPage(),
+              type: PageTransitionType.size,
+              alignment: Alignment.center),
+        );
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+              child: const MascotePage(),
+              type: PageTransitionType.size,
+              alignment: Alignment.center),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
     String logoAsset = themeProvider.getLogoAsset();
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -78,21 +116,48 @@ class _SobrePageState extends State<SobrePage> {
         body: Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.3,
-              child: Row(
-                children: [
-                  Image.asset(
-                    'lib/assets/banner2.png',
-                    width: MediaQuery.of(context).size.width * 1.0,
-                  )
-                ],
+              height: MediaQuery.of(context).size.height * 0.25,
+              child: CarouselSlider(
+                options: CarouselOptions(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  autoPlay: true,
+                  autoPlayInterval: Duration(seconds: 3),
+                  enlargeCenterPage: true,
+                ),
+                items: [
+                  'lib/assets/banner2.png',
+                  'lib/assets/banner1.png',
+                  'lib/assets/banner3.png',
+                  'lib/assets/banner4.png',
+                ].asMap().entries.map((entry) {
+                  int index = entry.key;
+                  String assetPath = entry.value;
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return GestureDetector(
+                        onTap: () => _onImageTap(index),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: themeProvider.getSpecialColor2(),
+                                  width: 2)),
+                          child: Image.asset(
+                            assetPath,
+                            width: MediaQuery.of(context).size.width * 1.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
               ),
             ),
             TabBar(
               indicatorColor: const Color(0xFFFFD35F),
               labelColor: themeProvider.getSpecialColor3(),
               labelStyle: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(context).size.width * 0.043,
+                fontSize: MediaQuery.of(context).size.width * 0.045,
               ),
               tabs: const [
                 Tab(text: 'Feteps'),
@@ -129,7 +194,7 @@ class _SobrePageState extends State<SobrePage> {
                                   child: Text(
                                     _isExpanded
                                         ? _fullText
-                                        : _fullText.substring(0, 636) + '...',
+                                        : _fullText.substring(0, 850) + '...',
                                     style: GoogleFonts.poppins(
                                         fontSize:
                                             MediaQuery.of(context).size.width *
@@ -174,6 +239,9 @@ class _SobrePageState extends State<SobrePage> {
                     scrollDirection: Axis.vertical,
                     children: [
                       Column(children: [
+                        SizedBox(
+                          height: screenHeight * 0.045,
+                        ),
                         Padding(
                           padding: EdgeInsets.all(screenWidth * 0.025),
                           child: const EventTable(),
@@ -183,7 +251,7 @@ class _SobrePageState extends State<SobrePage> {
                           children: [
                             Image.asset(
                               'lib/assets/calendario.png',
-                              width: MediaQuery.of(context).size.width * 0.41,
+                              width: MediaQuery.of(context).size.width * 0.45,
                             )
                           ],
                         ),

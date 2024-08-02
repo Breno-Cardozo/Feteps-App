@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:feteps/cadastroInstitu_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -64,12 +65,21 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
 
       if (decodedData is List<dynamic>) {
         setState(() {
-          items = decodedData.cast<Map<String, dynamic>>();
+          items = decodedData
+              .cast<Map<String, dynamic>>()
+              .where((item) =>
+                  item['description'].toString().toLowerCase() !=
+                  'administrador')
+              .toList();
         });
       } else if (decodedData is Map<String, dynamic> &&
           decodedData.containsKey('response')) {
         setState(() {
-          items = List<Map<String, dynamic>>.from(decodedData['response']);
+          items = List<Map<String, dynamic>>.from(decodedData['response'])
+              .where((item) =>
+                  item['description'].toString().toLowerCase() !=
+                  'administrador')
+              .toList();
         });
       } else {
         throw Exception(
@@ -98,12 +108,10 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
                   .toList();
 
           institutions.sort((a, b) {
-            String cleanA = a['name']
-                .toUpperCase()
-                .replaceFirst(RegExp(r'^PROFESSOR(A)? '), '');
-            String cleanB = b['name']
-                .toUpperCase()
-                .replaceFirst(RegExp(r'^PROFESSOR(A)? '), '');
+            String cleanA = a['name'];
+
+            String cleanB = b['name'];
+
             return cleanA.compareTo(cleanB);
           });
 
@@ -155,21 +163,33 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                        child: const TelaInicialPage(),
-                        type: PageTransitionType.leftToRightWithFade,
-                      ),
-                    );
-                  },
-                  icon: Icon(
-                    size: MediaQuery.of(context).size.width * 0.075,
-                    Icons.arrow_back_sharp,
-                    color: themeProvider.getSpecialColor3(),
-                  )),
+              WillPopScope(
+                onWillPop: () async {
+                  Navigator.pushReplacement(
+                    context,
+                    PageTransition(
+                      child: TelaInicialPage(),
+                      type: PageTransitionType.leftToRightWithFade,
+                    ),
+                  );
+                  return false;
+                },
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                          child: const TelaInicialPage(),
+                          type: PageTransitionType.leftToRightWithFade,
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      size: MediaQuery.of(context).size.width * 0.075,
+                      Icons.arrow_back_sharp,
+                      color: themeProvider.getSpecialColor3(),
+                    )),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0, left: 20, right: 20),
                 child: Image.asset(
@@ -352,32 +372,6 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
                                   )
                                 : Column(
                                     children: [
-                                      Padding(
-                                          padding: EdgeInsets.only(
-                                            bottom: screenHeight * 0.035,
-                                          ),
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                              labelText:
-                                                  'Pesquisar instituição',
-                                              labelStyle: TextStyle(
-                                                color: themeProvider
-                                                    .getSpecialColor2(),
-                                                fontSize: screenWidth * 0.0425,
-                                              ),
-                                              border:
-                                                  const OutlineInputBorder(),
-                                              focusedBorder:
-                                                  const OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Color(0xFF0E414F)),
-                                              ),
-                                              suffixIcon: Icon(Icons.search,
-                                                  color: themeProvider
-                                                      .getSpecialColor2()),
-                                            ),
-                                            onChanged: filterOptions,
-                                          )),
                                       SizedBox(
                                         height: screenHeight * 0.13,
                                         child: DropdownButtonFormField<String>(

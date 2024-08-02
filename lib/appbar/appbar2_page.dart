@@ -1,6 +1,7 @@
 import 'package:feteps/perfil_page.dart';
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -25,21 +26,33 @@ class AppBar2_page extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              onPressed: () {
+            WillPopScope(
+              onWillPop: () async {
                 Navigator.pushReplacement(
                   context,
                   PageTransition(
-                      child: destinationPage,
-                      type: PageTransitionType.leftToRight),
+                    child: destinationPage,
+                    type: PageTransitionType.leftToRight,
+                  ),
                 );
+                return false;
               },
-              icon: Padding(
-                padding: const EdgeInsets.only(bottom: 8, right: 15),
-                child: Icon(
-                  size: screenWidth * 0.075,
-                  Icons.arrow_back_sharp,
-                  color: themeProvider.getSpecialColor2(),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    PageTransition(
+                        child: destinationPage,
+                        type: PageTransitionType.leftToRight),
+                  );
+                },
+                icon: Padding(
+                  padding: const EdgeInsets.only(bottom: 8, right: 15),
+                  child: Icon(
+                    size: screenWidth * 0.075,
+                    Icons.arrow_back_sharp,
+                    color: themeProvider.getSpecialColor2(),
+                  ),
                 ),
               ),
             ),

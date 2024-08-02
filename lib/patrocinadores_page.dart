@@ -72,36 +72,8 @@ class _PatrocinadoresPageState extends State<PatrocinadoresPage> {
                   )
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.05),
-                    child: Text(
-                        'Apoiadores da Feira Tecnológica\ndo Centro Paula Souza!',
-                        style: TextStyle(
-                            fontSize: screenWidth * 0.045,
-                            color: themeProvider.getSpecialColor3())),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'lib/assets/dinheiro.png',
-                    width: screenWidth * 0.55,
-                  )
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.02,
-                ),
-                child: const Divider(
-                  thickness: 1.5,
-                  color: Colors.grey,
-                ),
+              SizedBox(
+                height: screenHeight * 0.05,
               ),
               for (int i = 0; i < patrocinadores.length; i += 2)
                 Row(

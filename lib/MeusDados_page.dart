@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:feteps/appbar/appbar2_page.dart';
 import 'package:feteps/atualizaperfil_page.dart';
 import 'package:feteps/global.dart';
@@ -27,11 +29,13 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
   final _institutionCodeController = TextEditingController();
   final _idController = TextEditingController();
   final _emailController = TextEditingController();
+  final _dataController = TextEditingController();
   String idUsuario = '';
   String nomeUsuario = '';
   String email = '';
   String estado = '';
   String cidade = '';
+  String registro = '';
   String institutionid = '';
   String tokenLogado = '';
   bool isLoading = false;
@@ -85,9 +89,12 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
         final data = jsonDecode(response.body);
         setState(() {
           userData = data;
-          institutionid = data['institution']?['id'].toString() ?? 'No id';
+          institutionid = data['institution']?['id'].toString() ??
+              'Sua instituição não possui um codigo';
+          registro = data['registerDate']?.toString() ?? 'Data não encontrada';
 
           _institutionCodeController.text = institutionid;
+          _dataController.text = registro;
         });
       } else {
         throw Exception('Failed to load user data');
@@ -104,7 +111,7 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    
+
     return Scaffold(
       appBar: AppBar2_page(
           screenWidth: screenWidth, destinationPage: const PerfilPage()),
@@ -141,7 +148,7 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
               ),
               buildTextField(
                 context,
-                labelText: 'Nome de usuário:',
+                labelText: 'Nome do usuário:',
                 controller: _userNameController,
               ),
               buildTextField(
@@ -156,15 +163,15 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
               ),
               buildTextField(
                 context,
-                labelText: 'ID de usuário:',
-                controller: _idController,
+                labelText: 'Data de registro:',
+                controller: _dataController,
               ),
               buildTextField(
                 context,
-                labelText: 'Cod Instituição:',
+                labelText: 'Cod Instituição(Etecs/Fatecs):',
                 controller: _institutionCodeController,
               ),
-              SizedBox(height: screenHeight * 0.01),
+              SizedBox(height: screenHeight * 0.02),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -206,7 +213,7 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
 
     return Padding(
       padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03),
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.035),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:feteps/cadastro1_page.dart';
 import 'package:feteps/global.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'Apis/cidades.dart';
 import 'Apis/estados.dart';
 import 'package:provider/provider.dart';
@@ -122,18 +124,31 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () {
+              WillPopScope(
+                onWillPop: () async {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => Cadastro1Page(),
+                    PageTransition(
+                      child: Cadastro1Page(),
+                      type: PageTransitionType.topToBottom,
                     ),
                   );
+                  return false;
                 },
-                icon: Icon(
-                  Icons.arrow_back_sharp,
-                  color: themeProvider.getSpecialColor2(),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        child: Cadastro1Page(),
+                        type: PageTransitionType.topToBottom,
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_sharp,
+                    color: themeProvider.getSpecialColor2(),
+                  ),
                 ),
               ),
               Padding(

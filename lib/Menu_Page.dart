@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:feteps/Mascote_page.dart';
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -221,19 +222,33 @@ class _MenuPageState extends State<MenuPage> {
                     context: context,
                   ),
                   _buildDrawerItem(
-                    icon: Icons.thumb_up,
-                    text: 'Avaliações',
+                    icon: Icons.android,
+                    text: 'Mascote',
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
                         PageTransition(
-                          child: AvaliacaoPage(),
+                          child: MascotePage(),
                           type: PageTransitionType.fade,
                         ),
                       );
                     },
                     context: context,
                   ),
+                  // _buildDrawerItem(
+                  //   icon: Icons.thumb_up,
+                  //   text: 'Avaliações',
+                  //   onTap: () {
+                  //     Navigator.pushReplacement(
+                  //       context,
+                  //       PageTransition(
+                  //         child: AvaliacaoPage(),
+                  //         type: PageTransitionType.fade,
+                  //       ),
+                  //     );
+                  //   },
+                  //   context: context,
+                  // ),
                   _buildDrawerItem(
                     icon: Icons.place,
                     text: 'Mapa',

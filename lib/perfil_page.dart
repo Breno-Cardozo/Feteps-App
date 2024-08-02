@@ -354,7 +354,7 @@ class _PerfilPageState extends State<PerfilPage> {
         top: screenHeight * 0.015,
       ),
       child: GestureDetector(
-        onTap: _logout,
+        onTap: Sair,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
@@ -435,6 +435,63 @@ class _PerfilPageState extends State<PerfilPage> {
                 "Fechar",
                 style: TextStyle(
                   color: Color(0xFF0E414F),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void Sair() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Color.fromARGB(255, 199, 199, 199),
+          title: Center(
+              child: Text(
+            "Aviso!",
+            style: GoogleFonts.poppins(color: const Color(0xFFB6382B)),
+          )),
+          content: Container(
+            height: MediaQuery.of(context).size.height * 0.08,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.64,
+                      child: Text(
+                        'Essa ação irá te desconectar do aplicativo, deseja prosseguir?',
+                        style: GoogleFonts.roboto(
+                          color: Colors.black,
+                          fontSize: MediaQuery.of(context).size.width * 0.04,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+          actions: [
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  _logout();
+                },
+                child: Text(
+                  "Confirmar",
+                  style: TextStyle(
+                      color: const Color(0xFFB6382B),
+                      fontSize: MediaQuery.of(context).size.width * 0.05,
+                      decoration: TextDecoration.underline,
+                      decorationColor: const Color(0xFFB6382B),
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
