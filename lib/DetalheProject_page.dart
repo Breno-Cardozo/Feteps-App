@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // Atualização aqui
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flip_card/flip_card.dart'; // Adicionando o pacote flip_card
 import 'package:feteps/Temas/theme_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetalheProjectPage extends StatelessWidget {
   final Map<String, dynamic> project;
@@ -62,6 +66,7 @@ class DetalheProjectPage extends StatelessWidget {
         project['ods']['id_ods']?.toString() ?? 'ID ODS Não Disponível';
     String nameOds =
         project['ods']['name_ods']?.toString() ?? 'Nome ODS Não Disponível';
+    String link = project['video_url'] ?? 'Link Não Disponivel';
 
     return Scaffold(
       appBar: AppBar(
@@ -115,7 +120,7 @@ class DetalheProjectPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.03),
           if (bannerUrl != null && bannerUrl.isNotEmpty)
             Container(
               height: screenHeight * 0.25,
@@ -152,16 +157,16 @@ class DetalheProjectPage extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.035),
           Text(
             'Resumo',
             style: GoogleFonts.inter(
               fontSize: screenWidth * 0.048,
               fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 208, 20, 20),
+              color: themeProvider.getSpecialColor(),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: screenHeight * 0.025),
           Text(
             project['project_abstract'] ?? 'Este projeto não possuí um resumo.',
             style: GoogleFonts.inter(
@@ -169,6 +174,35 @@ class DetalheProjectPage extends StatelessWidget {
               color: themeProvider.getSpecialColor3(),
             ),
             textAlign: TextAlign.justify,
+          ),
+          SizedBox(
+            height: screenHeight * 0.03,
+          ),
+          Text(
+            'Link do Youtube',
+            style: GoogleFonts.inter(
+              fontSize: screenWidth * 0.048,
+              fontWeight: FontWeight.bold,
+              color: themeProvider.getSpecialColor(),
+            ),
+          ),
+          SizedBox(
+            height: screenHeight * 0.025,
+          ),
+          InkWell(
+            onTap: () async {
+              _launchURL(link);
+            },
+            child: Text(
+              project['video_url'] ?? 'Este projeto não possuí um Link.',
+              style: GoogleFonts.roboto(
+                fontSize: screenWidth * 0.035,
+                fontWeight: FontWeight.bold,
+                color: Color(
+                    0xFFFFD35F), // Define a cor como azul para indicar que é um link
+              ),
+              textAlign: TextAlign.justify,
+            ),
           ),
           Divider(
             color: themeProvider.getSpecialColor3(),
@@ -184,15 +218,18 @@ class DetalheProjectPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Wrap(
-            spacing: 20.0,
-            runSpacing: 20.0,
-            alignment: WrapAlignment.spaceAround,
-            children: [
-              // Itera sobre os expositores e cria um IconPerson para cada um
-              for (var exhibitor in project['exhibitors'])
-                IconPerson(exhibitor: exhibitor),
-            ],
+          SizedBox(
+            height: screenHeight * 0.25, // Altura máxima dos FlipCards
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: project['exhibitors'].length,
+              itemBuilder: (context, index) {
+                var exhibitor = project['exhibitors'][index];
+                return FlipCardPerson(
+                  exhibitor: exhibitor,
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -200,36 +237,115 @@ class DetalheProjectPage extends StatelessWidget {
   }
 }
 
-class IconPerson extends StatelessWidget {
+class FlipCardPerson extends StatelessWidget {
   final Map<String, dynamic> exhibitor;
+  // Novo parâmetro
 
-  const IconPerson({super.key, required this.exhibitor});
+  const FlipCardPerson({
+    super.key,
+    required this.exhibitor,
+  });
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return Column(
-      children: [
-        // Exibe a foto do expositor, ou um ícone padrão se não houver foto
-        exhibitor['photo'] != null && exhibitor['photo'].isNotEmpty
-            ? CircleAvatar(
-                backgroundImage: NetworkImage(exhibitor['photo']),
-                radius: 25,
-              )
-            : FaIcon(
-                FontAwesomeIcons.userCircle,
-                size: 50.0,
-                color: themeProvider.getSpecialColor(),
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+      child: FlipCard(
+        direction: FlipDirection.HORIZONTAL, // Direção do flip
+        front: Container(
+          width: screenWidth * 0.4,
+          height: screenHeight * 0.2,
+          padding: const EdgeInsets.only(top: 30.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: themeProvider.getSpecialColor2(),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Column(
+            children: [
+              ClipOval(
+                child: SvgPicture.network(
+                  'https://api.dicebear.com/9.x/bottts/svg?seed=${exhibitor['name_exhibitor']}',
+                  width: screenWidth * 0.2,
+                  placeholderBuilder: (context) => CircularProgressIndicator(),
+                ),
               ),
-        const SizedBox(height: 8),
-        Text(
-          exhibitor['name_exhibitor'] ?? 'Nome Desconhecido',
-          style: GoogleFonts.inter(
-            fontSize: 14.4,
-            color: themeProvider.getSpecialColor(),
+              const SizedBox(height: 8.0),
+              Container(
+                width: screenWidth * 0.35,
+                child: Text(
+                  exhibitor['name_exhibitor'],
+                  style: GoogleFonts.inter(
+                    fontSize: screenWidth * 0.03,
+                    fontWeight: FontWeight.bold,
+                    color: themeProvider.getSpecialColor2(),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+        back: Container(
+          width: screenWidth * 0.4,
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: themeProvider.getSpecialColor2(),
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: themeProvider.getSpecialColor2(),
+                    width: 2,
+                  ),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'lib/assets/fundo.png',
+                    width: MediaQuery.of(context).size.width * 0.25,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                '${exhibitor['user_type']?['description'] ?? 'Tipo não indentificado'}',
+                style: GoogleFonts.inter(
+                  fontSize: screenWidth * 0.034,
+                  color: themeProvider.getSpecialColor3(),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
+
+Future<void> _launchURL(String url) async {
+  if (url.isEmpty) {
+    print('URL is empty');
+    return;
+  }
+
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri)) {
+    print('Could not launch $url');
+  }
+}
+

@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/esquecisenha_page.dart';
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:feteps/telainicial_page.dart';
+import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'global.dart';
@@ -43,20 +46,32 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () {
+              WillPopScope(
+                onWillPop: () async {
                   Navigator.pushReplacement(
                     context,
                     PageTransition(
-                      child: const TelaInicialPage(),
+                      child: TelaInicialPage(),
                       type: PageTransitionType.leftToRightWithFade,
                     ),
                   );
+                  return false;
                 },
-                icon: Icon(
-                  size: MediaQuery.of(context).size.width * 0.075,
-                  Icons.arrow_back_sharp,
-                  color: themeProvider.getSpecialColor2(),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        child: const TelaInicialPage(),
+                        type: PageTransitionType.leftToRightWithFade,
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    size: MediaQuery.of(context).size.width * 0.075,
+                    Icons.arrow_back_sharp,
+                    color: themeProvider.getSpecialColor2(),
+                  ),
                 ),
               ),
               Padding(
@@ -327,7 +342,11 @@ class _LoginFetepsPageState extends State<LoginFetepsPage> {
     final url = Uri.parse(GlobalPageState.Url +
         '/appfeteps/pages/Users/loginUser.php?userEmail=${_emailController.text}&userPassword=${_passwordController.text}');
 
-    final resposta = await http.post(url);
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    final resposta = await client.post(url);
 
     if (resposta.statusCode == 200) {
       var data = jsonDecode(resposta.body);
