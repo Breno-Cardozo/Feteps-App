@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feteps/DetalheProject_page.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
 import 'package:feteps/sobre_page.dart';
@@ -7,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:feteps/Menu_Page.dart';
+import 'package:http/io_client.dart';
 import 'global.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
@@ -67,7 +70,11 @@ class ProjetosHomeState extends State<ProjetosHomePage> {
   }
 
   Future<void> _fetchProjects(int ods) async {
-    final response = await http.get(
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    final response = await client.get(
       Uri.parse(GlobalPageState.Url +
           '/appfeteps/pages/Project/get.php?id_ods=$ods&limit=500'),
     );

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feteps/cadastro1_page.dart';
 import 'package:feteps/loginfeteps_page.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:feteps/telainicial_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'dart:convert';
 import 'global.dart';
 import 'package:provider/provider.dart';
@@ -109,6 +112,13 @@ class _Cadastro2PageState extends State<Cadastro2Page> {
     super.dispose();
   }
 
+  Future<http.Response> getApiData(String url) async {
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+    return await client.get(Uri.parse(url));
+  }
+
   void enviarDados() async {
     setState(() {
       _isLoading = true;
@@ -160,7 +170,9 @@ class _Cadastro2PageState extends State<Cadastro2Page> {
     request.fields['idInstitution'] = idInstitution.toString();
     request.fields['registerDate'] = dataAtual;
 
-    var response = await request.send();
+    var client = IOClient(
+        HttpClient()..badCertificateCallback = (cert, host, port) => true);
+    var response = await client.send(request);
     var responseData = jsonDecode(await response.stream.bytesToString());
 
     if (response.statusCode == 200) {

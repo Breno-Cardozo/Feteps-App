@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feteps/DetalheProject_page.dart';
 import 'package:feteps/Menu_Page.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'dart:convert';
 import 'global.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +54,11 @@ class _ParticipantesPageState extends State<ParticipantesPage> {
   }
 
   Future<void> _fetchProjectsByClassification(String classification) async {
-    final response = await http.get(Uri.parse(GlobalPageState.Url +
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    final response = await client.get(Uri.parse(GlobalPageState.Url +
         '/appfeteps/pages/Project/get.php?classification=$classification&limit=50'));
 
     if (response.statusCode == 200) {

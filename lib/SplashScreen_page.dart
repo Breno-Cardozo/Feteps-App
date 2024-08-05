@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:feteps/global.dart';
 import 'package:feteps/telainicial_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
+import 'package:http/io_client.dart';
 import 'dart:async';
 import 'sobre_page.dart';
 import 'loginfeteps_page.dart';
@@ -124,8 +127,12 @@ Future<bool> verificarToken() async {
 
     final jsonString = jsonEncode(jsonData);
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     try {
-      final response = await http.post(
+      final response = await client.post(
         url,
         headers: {
           'Content-Type': 'application/json',

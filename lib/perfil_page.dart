@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/MeusDados_page.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/io_client.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -67,8 +69,12 @@ class _PerfilPageState extends State<PerfilPage> {
     String url =
         GlobalPageState.Url + '/appfeteps/pages/Users/getUserById.php?id=$id';
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     try {
-      final response = await http.get(
+      final response = await client.get(
         Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $tokenLogado',
@@ -88,6 +94,7 @@ class _PerfilPageState extends State<PerfilPage> {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
     } finally {
       setState(() {
         isLoading = false;

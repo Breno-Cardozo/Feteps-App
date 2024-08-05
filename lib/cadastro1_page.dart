@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/cadastroInstitu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'cadastro2_page.dart';
 import 'telainicial_page.dart';
 import 'global.dart';
@@ -50,6 +52,32 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
         '/appfeteps/pages/Institution/get.php?type=OUTROS&limit=300',
   };
 
+  Future<http.Response> getApiData(String url) async {
+    final client = IOClient(
+        HttpClient()..badCertificateCallback = (cert, host, port) => true);
+    // ignore certificate verification
+    return await client.get(Uri.parse(url));
+  }
+
+  Future<void> carregarDados() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    for (var tipo in apiUrls.keys) {
+      final response = await getApiData(apiUrls[tipo]!);
+      final jsonData = jsonDecode(response.body);
+      setState(() {
+        options[tipo] =
+            jsonData.map((item) => item as Map<String, dynamic>).toList();
+      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +85,11 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
   }
 
   Future<void> fetchItems() async {
-    final response = await http.get(
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    final response = await client.get(
         Uri.parse(GlobalPageState.Url + '/appfeteps/pages/TypesUser/get.php'));
 
     if (response.statusCode == 200) {
@@ -96,7 +128,7 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
     });
 
     try {
-      final response = await http.get(Uri.parse(apiUrls[type]!));
+      final response = await getApiData(apiUrls[type]!);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -109,9 +141,7 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
 
           institutions.sort((a, b) {
             String cleanA = a['name'];
-
             String cleanB = b['name'];
-
             return cleanA.compareTo(cleanB);
           });
 

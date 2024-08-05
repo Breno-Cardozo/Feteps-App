@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/Menu_Page.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
 import 'package:feteps/global.dart';
@@ -8,6 +9,7 @@ import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
@@ -29,9 +31,13 @@ class _PatrocinadoresPageState extends State<PatrocinadoresPage> {
   }
 
   Future<void> fetchPatrocinadores() async {
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     final url = Uri.parse(GlobalPageState.Url +
         '/appfeteps/pages/Exhibitor/get.php?type=Patrocinador');
-    final response = await http.get(url);
+    final response = await client.get(url);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

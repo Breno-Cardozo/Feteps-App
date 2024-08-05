@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/cadastro1_page.dart';
 import 'package:feteps/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/io_client.dart';
 import 'package:page_transition/page_transition.dart';
 import 'Apis/cidades.dart';
 import 'Apis/estados.dart';
@@ -68,11 +70,15 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
       return;
     }
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     var url = Uri.parse(
         GlobalPageState.Url + '/appfeteps/pages/Institution/save.php');
 
     try {
-      var response = await http.post(
+      var response = await client.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({

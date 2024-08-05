@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feteps/Menu_Page.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
 import 'package:feteps/sobre_page.dart';
@@ -7,6 +9,7 @@ import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/io_client.dart';
 import 'global.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
@@ -41,8 +44,12 @@ class PalestrantesHomeState extends State<PalestrantesHomePage> {
   }
 
   Future<void> _fetchPalestrantes() async {
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     try {
-      final response = await http.get(
+      final response = await client.get(
           Uri.parse(GlobalPageState.Url + '/appfeteps/pages/Event/get.php'));
 
       if (response.statusCode == 200) {

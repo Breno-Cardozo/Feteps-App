@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:feteps/appbar/appbar2_page.dart';
@@ -8,6 +9,7 @@ import 'package:feteps/loginfeteps_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
@@ -77,8 +79,12 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
     String url =
         GlobalPageState.Url + '/appfeteps/pages/Users/getUserById.php?id=$id';
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     try {
-      final response = await http.get(
+      final response = await client.get(
         Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $tokenLogado',
@@ -89,16 +95,17 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
         final data = jsonDecode(response.body);
         setState(() {
           userData = data;
-          institutionid = data['institution']?['id'].toString() ??
-              'Sua instituição não possui um codigo';
           registro = data['registerDate']?.toString() ?? 'Data não encontrada';
 
-          _institutionCodeController.text = institutionid;
+          _institutionCodeController.text =
+              data['institution']?['id']?.toString() ?? '';
           _dataController.text = registro;
         });
       } else {
         throw Exception('Failed to load user data');
       }
+    } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
     } finally {
       setState(() {
         isLoading = false;

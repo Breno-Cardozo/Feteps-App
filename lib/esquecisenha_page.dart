@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/loginfeteps_page.dart';
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:feteps/telainicial_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'global.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
@@ -403,6 +405,10 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
       return;
     }
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(
@@ -413,33 +419,40 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
     request.fields['cpf'] = _cpfController.text;
     request.fields['newPassword'] = _passwordController.text;
 
-    final response = await request.send();
+    try {
+      final response = await client.send(request);
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(await response.stream.bytesToString());
-      print('Response data: $responseData');
-      if (responseData['type'] == 'success' &&
-          responseData['message'] == 'Password updated') {
-        ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.pushAndRemoveUntil(
-            context,
-            PageTransition(
-              child: const LoginFetepsPage(),
-              type: PageTransitionType.topToBottom,
-            ),
-            (route) => false,
-          );
-        });
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(await response.stream.bytesToString());
+        print('Response data: $responseData');
+        if (responseData['type'] == 'success' &&
+            responseData['message'] == 'Password updated') {
+          ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+          Future.delayed(const Duration(seconds: 2), () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageTransition(
+                child: const LoginFetepsPage(),
+                type: PageTransitionType.topToBottom,
+              ),
+              (route) => false,
+            );
+          });
+        } else {
+          setState(() {
+            _errorMessage = responseData['message'];
+          });
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       } else {
         setState(() {
-          _errorMessage = responseData['message'];
+          _errorMessage = 'Falha ao alterar a senha';
         });
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-    } else {
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Falha ao alterar a senha';
+        _errorMessage = 'Erro ao alterar a senha: $e';
       });
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
