@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:feteps/TermosUso_page.dart';
 import 'package:feteps/cadastro1_page.dart';
 import 'package:feteps/loginfeteps_page.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +75,8 @@ class _Cadastro2PageState extends State<Cadastro2Page> {
   _loadEstados() async {
     try {
       List<Estado> estados = await Estado.getEstados();
+      estados.sort((a, b) =>
+          a.nome.compareTo(b.nome)); // Ordena a lista alfabeticamente pelo nome
       setState(() {
         _estados = estados;
       });
@@ -749,6 +751,33 @@ class _Cadastro2PageState extends State<Cadastro2Page> {
                                       MediaQuery.of(context).size.width * 0.045,
                                 ),
                               ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                child: TermosUsoPage(),
+                                type: PageTransitionType.bottomToTop,
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Termos De Uso",
+                            style: GoogleFonts.oswald(
+                              color: themeProvider.getSpecialColor(),
+                              decoration: TextDecoration.underline,
+                              decorationColor: themeProvider.getSpecialColor(),
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.042,
                             ),
                           ),
                         ),

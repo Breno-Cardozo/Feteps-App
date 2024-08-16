@@ -46,7 +46,7 @@ class _SobreNosPageState extends State<SobreNosPage> {
             child: Row(
               children: [
                 Image.asset(
-                  'lib/assets/banner5.png',
+                  'lib/assets/banners/banner5.png',
                   width: screenWidth * 1.0,
                 )
               ],

@@ -97,21 +97,35 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
 
       if (decodedData is List<dynamic>) {
         setState(() {
-          items = decodedData
-              .cast<Map<String, dynamic>>()
-              .where((item) =>
-                  item['description'].toString().toLowerCase() !=
-                  'administrador')
-              .toList();
+          items = decodedData.cast<Map<String, dynamic>>().where((item) {
+            final description = item['description'].toString().toLowerCase();
+            return description != 'administrador' &&
+                description != 'apoio especial' &&
+                description != 'patrocinador especial' &&
+                description != 'patrocinador diamante' &&
+                description != 'patrocinador ouro' &&
+                description != 'patrocinador prata' &&
+                description != 'apoio institucional' &&
+                description != 'patrocinador master' &&
+                description != 'apoio comunicação e mídia';
+          }).toList();
         });
       } else if (decodedData is Map<String, dynamic> &&
           decodedData.containsKey('response')) {
         setState(() {
           items = List<Map<String, dynamic>>.from(decodedData['response'])
-              .where((item) =>
-                  item['description'].toString().toLowerCase() !=
-                  'administrador')
-              .toList();
+              .where((item) {
+            final description = item['description'].toString().toLowerCase();
+            return description != 'administrador' &&
+                description != 'apoio especial' &&
+                description != 'patrocinador especial' &&
+                description != 'patrocinador diamante' &&
+                description != 'patrocinador ouro' &&
+                description != 'patrocinador prata' &&
+                description != 'apoio institucional' &&
+                description != 'patrocinador master' &&
+                description != 'apoio comunicação e mídia';
+          }).toList();
         });
       } else {
         throw Exception(
@@ -163,6 +177,8 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
       });
     }
   }
+
+  
 
   void filterOptions(String query) {
     setState(() {

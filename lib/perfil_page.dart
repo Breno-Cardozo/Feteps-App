@@ -179,11 +179,22 @@ class _PerfilPageState extends State<PerfilPage> {
         children: [
           Padding(
             padding: EdgeInsets.only(left: screenWidth * 0.025),
-            child: SvgPicture.network(
-              'https://api.dicebear.com/9.x/bottts/svg?seed=$nomeUsuario',
-              height: screenHeight * 0.15,
-              width: screenWidth * 0.3,
-              placeholderBuilder: (context) => CircularProgressIndicator(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: themeProvider.getSpecialColor2(),
+                  width: 1,
+                ),
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'lib/assets/user2.png',
+                  height: screenHeight * 0.14,
+                  width: screenWidth * 0.3,
+                ),
+              ),
             ),
           ),
           Column(

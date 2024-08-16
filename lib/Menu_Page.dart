@@ -1,10 +1,9 @@
 import 'dart:math';
-import 'package:feteps/Mascote_page.dart';
 import 'package:feteps/sobre_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
-import 'package:feteps/avaliar_page.dart';
+import 'package:feteps/Mascote_page.dart';
 import 'package:feteps/curiosidades_page.dart';
 import 'package:feteps/participantes_page.dart';
 import 'package:feteps/mapa_page.dart';
@@ -76,7 +75,7 @@ class _MenuPageState extends State<MenuPage> {
               child: ListView(
                 children: <Widget>[
                   SizedBox(
-                    height: screenHeight * 0.2,
+                    height: screenHeight * 0.18,
                     child: DrawerHeader(
                       decoration: BoxDecoration(
                           color: Theme.of(context).scaffoldBackgroundColor),
@@ -96,29 +95,25 @@ class _MenuPageState extends State<MenuPage> {
                                           top: screenHeight * 0.015),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF0E414F),
+                                          color: Colors.white,
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color:
-                                                themeProvider.getBorderColor(),
-                                            width: 3,
+                                            color: themeProvider
+                                                .getSpecialColor2(),
+                                            width: 1,
                                           ),
                                         ),
                                         child: ClipOval(
-                                          child: SvgPicture.network(
-                                            'https://api.dicebear.com/9.x/bottts/svg?seed=$nomeUsuario',
-                                            height: screenHeight * 0.12,
-                                            placeholderBuilder: (context) =>
-                                                CircularProgressIndicator(),
-                                          ),
-                                        ),
+                                            child: Image.asset(
+                                          'lib/assets/user2.png',
+                                        )),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                               Positioned(
-                                bottom: screenHeight * 0.04,
+                                bottom: screenHeight * 0.02,
                                 right: screenWidth * 0.3,
                                 child: Container(
                                   width: screenWidth * 0.3,

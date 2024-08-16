@@ -154,6 +154,7 @@ class ProjetosHomeState extends State<ProjetosHomePage> {
                         child: CardWidget(
                           ods: i,
                           isSelected: _selectedOds == i,
+                          onTap: _updateSelectedOds,
                         ),
                       )
                   ],
@@ -247,14 +248,17 @@ class ProjetosHomeState extends State<ProjetosHomePage> {
   }
 }
 
-class CardWidget extends StatelessWidget {
+class CardWidget extends StatefulWidget {
   final int ods;
   final bool isSelected;
+  final Function(int) onTap;
 
-  CardWidget({
+  const CardWidget({
     required this.ods,
     required this.isSelected,
-  });
+    required this.onTap,
+    Key? key,
+  }) : super(key: key);
 
   static Color cor(int ods) {
     switch (ods) {
@@ -371,6 +375,34 @@ class CardWidget extends StatelessWidget {
   }
 
   @override
+  _CardWidgetState createState() => _CardWidgetState();
+}
+
+class _CardWidgetState extends State<CardWidget> with TickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     const Alignment _startAlignment = Alignment.topLeft;
     const Alignment _endAlignment = Alignment.centerLeft;
@@ -384,86 +416,97 @@ class CardWidget extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: screenWidth * 0.48,
-        width: screenWidth * 0.65,
-        child: Card(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(15),
-              topRight: Radius.circular(15),
-            ),
-          ),
-          elevation: 5,
-          child: Stack(
-            children: <Widget>[
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: cor(ods),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15),
-                    ),
-                    border: Border.all(
-                        color: themeProvider.getBorderColor(), width: 2),
-                  ),
+    return GestureDetector(
+      onTap: () async {
+        await _controller.forward();
+        await _controller.reverse();
+        widget.onTap(widget.ods); // Chama a função onTap passada como argumento
+      },
+      child: ScaleTransition(
+        scale: _animation,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            height: screenWidth * 0.48,
+            width: screenWidth * 0.65,
+            child: Card(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
                 ),
               ),
-              Align(
-                alignment: intermediateAlignment,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      bottom: screenHeight * 0.085,
-                      left: screenWidth * 0.005,
-                      right: screenWidth * 0.005),
-                  child: Container(
-                    decoration: BoxDecoration(
+              elevation: 5,
+              child: Stack(
+                children: <Widget>[
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: CardWidget.cor(widget.ods),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(15),
                           topRight: Radius.circular(15),
                         ),
                         border: Border.all(
-                            color: themeProvider.getBorderColor(), width: 0.3)),
-                    child: Image.asset(
-                      texto(ods)[2],
-                      width: screenWidth * 1.0,
+                            color: themeProvider.getBorderColor(), width: 2),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  height: screenWidth * 0.20,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: themeProvider.getBorderColor(), width: 2),
+                  Align(
+                    alignment: intermediateAlignment,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          bottom: screenHeight * 0.085,
+                          left: screenWidth * 0.005,
+                          right: screenWidth * 0.005),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15),
+                            ),
+                            border: Border.all(
+                                color: themeProvider.getBorderColor(),
+                                width: 0.3)),
+                        child: Image.asset(
+                          CardWidget.texto(widget.ods)[2],
+                          width: screenWidth * 1.0,
+                        ),
+                      ),
+                    ),
                   ),
-                  child: SizedBox(
+                  Align(
+                    alignment: Alignment.bottomCenter,
                     child: Container(
-                      color: cor(ods),
-                      width: double.infinity,
-                      margin: const EdgeInsets.all(0),
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Text(
-                          "CLIQUE PARA VER OS PROJETOS",
-                          style: GoogleFonts.inter(
-                            fontSize: screenWidth * 0.035,
-                            color: Colors.white,
+                      height: screenWidth * 0.20,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: themeProvider.getBorderColor(), width: 2),
+                      ),
+                      child: SizedBox(
+                        child: Container(
+                          color: CardWidget.cor(widget.ods),
+                          width: double.infinity,
+                          margin: const EdgeInsets.all(0),
+                          padding: const EdgeInsets.all(0),
+                          alignment: Alignment.bottomLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              "CLIQUE PARA VER OS PROJETOS",
+                              style: GoogleFonts.inter(
+                                fontSize: screenWidth * 0.035,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -471,20 +514,53 @@ class CardWidget extends StatelessWidget {
   }
 }
 
-class CardWidget2 extends StatelessWidget {
+class CardWidget2 extends StatefulWidget {
   final Map<String, dynamic> project;
   final int ods;
 
-  CardWidget2({required this.project, required this.ods});
+  const CardWidget2({
+    required this.project,
+    required this.ods,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _CardWidget2State createState() => _CardWidget2State();
+}
+
+class _CardWidget2State extends State<CardWidget2>
+    with TickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
-    final String? bannerUrl = project['banner'];
+    final String? bannerUrl = widget.project['banner'];
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    final List<dynamic>? exhibitors = project['exhibitors'];
+    final List<dynamic>? exhibitors = widget.project['exhibitors'];
     String institutionName = '';
 
     if (exhibitors != null && exhibitors.isNotEmpty) {
@@ -497,84 +573,100 @@ class CardWidget2 extends StatelessWidget {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: InkWell(
-        onTap: () {
+    return GestureDetector(
+        onTap: () async {
+          await _controller.forward();
+          await _controller.reverse();
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetalheProjectPage(project: project),
+              builder: (context) => DetalheProjectPage(project: widget.project),
             ),
           );
         },
-        child: Card(
-          color: CardWidget.cor(ods),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: SizedBox(
-            width: screenWidth * 0.45,
-            height: screenWidth * 0.6,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 10.0),
-                if (bannerUrl != null && bannerUrl.isNotEmpty)
-                  Container(
-                    height: screenHeight * 0.15,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                      color: themeProvider.getBorderColor(),
-                      width: 2.5,
-                    )),
-                    child: Image.network(
-                      bannerUrl,
-                      width: screenWidth * 0.42,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        print(error);
-                        return Image.asset(
-                          'lib/assets/Rectangle.png',
-                          width: screenWidth * 0.42,
-                        );
-                      },
+        child: ScaleTransition(
+          scale: _animation,
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Card(
+              color: CardWidget.cor(widget.ods),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: SizedBox(
+                width: screenWidth * 0.45,
+                height: screenWidth * 0.6,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 10.0),
+                    if (bannerUrl != null && bannerUrl.isNotEmpty)
+                      FutureBuilder<ImageProvider>(
+                        future: _loadImage(bannerUrl),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container(
+                              height: screenHeight * 0.15,
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Image.asset(
+                              'lib/assets/Rectangle.png',
+                              width: screenWidth * 0.42,
+                            );
+                          } else {
+                            return Container(
+                              height: screenHeight * 0.15,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                color: themeProvider.getBorderColor(),
+                                width: 2.5,
+                              )),
+                              child: Image(
+                                image: snapshot.data ??
+                                    AssetImage('lib/assets/Rectangle.png'),
+                                width: screenWidth * 0.42,
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          }
+                        },
+                      )
+                    else
+                      Image.asset(
+                        'lib/assets/Rectangle.png',
+                        width: screenWidth * 0.42,
+                      ),
+                    const SizedBox(height: 2.0),
+                    Text(
+                      _shortenText(widget.project['name_project'], 15),
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.04,
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  )
-                else
-                  Image.asset(
-                    'lib/assets/Rectangle.png',
-                    width: screenWidth * 0.42,
-                  ),
-                const SizedBox(height: 2.0),
-                Text(
-                  _shortenText(project['name_project'], 15),
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: screenWidth * 0.04,
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 3.0),
-                Text(
-                  'ID: ' + project['id'].toString(),
-                  style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.035,
-                      color: const Color.fromARGB(255, 0, 0, 0)),
-                ),
-                Text(_shortenText(institutionName, 35),
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.035,
-                      color: const Color.fromARGB(255, 0, 0, 0),
+                    const SizedBox(height: 3.0),
+                    Text(
+                      'Stand: ' + widget.project['stand']?['stand_number'],
+                      style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          color: const Color.fromARGB(255, 0, 0, 0)),
                     ),
-                    textAlign: TextAlign.center),
-              ],
+                    Text(_shortenText(institutionName, 35),
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                        ),
+                        textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
 
@@ -583,5 +675,19 @@ String _shortenText(String text, int maxLength) {
     return text;
   } else {
     return text.substring(0, maxLength) + '...';
+  }
+}
+
+Future<ImageProvider> _loadImage(String url) async {
+  final httpClient = IOClient(
+      HttpClient()..badCertificateCallback = (cert, host, port) => true);
+
+  final response = await httpClient.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    return MemoryImage(response.bodyBytes);
+  } else {
+    print('Erro ao carregar imagem: ${response.statusCode}');
+    return AssetImage('lib/assets/Rectangle.png');
   }
 }

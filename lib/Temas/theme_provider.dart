@@ -68,6 +68,12 @@ class ThemeProvider with ChangeNotifier {
         : Colors.white;
   }
 
+  Color getSpecialColor21() {
+    return _themeMode == ThemeMode.light
+        ? Colors.white
+        : const Color(0xFF0E414F);
+  }
+
   Color getSpecialColor3() {
     return _themeMode == ThemeMode.light ? Colors.black : Colors.white;
   }

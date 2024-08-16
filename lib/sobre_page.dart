@@ -1,16 +1,11 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:feteps/Mascote_page.dart';
-import 'package:feteps/participantes_page.dart';
-import 'package:feteps/Menu_Page.dart';
-import 'package:feteps/patrocinadores_page.dart';
-import 'package:feteps/projetos_page.dart';
-import 'package:feteps/sobrenos_page.dart';
-import 'package:feteps/telainicial_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:feteps/Mascote_page.dart';
+import 'package:feteps/Menu_Page.dart';
+import 'package:feteps/patrocinadores_page.dart';
+import 'package:feteps/projetos_page.dart';
 import 'package:feteps/Temas/theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,19 +16,40 @@ class SobrePage extends StatefulWidget {
   State<SobrePage> createState() => _SobrePageState();
 }
 
-class _SobrePageState extends State<SobrePage> {
-  bool _isExpanded = false;
+class _SobrePageState extends State<SobrePage> with TickerProviderStateMixin {
+  late final List<AnimationController> _controllers;
+  late final List<Animation<double>> _animations;
 
-  final String _fullText =
-      'A Feteps é um evento que reúne projetos desenvolvidos por alunos do Centro Paula Souza e outras instituições participantes. Com projetos inovadores, de transformação social, tecnológicos e criativos. A diversidade e a qualidade dos trabalhos demonstram a excelência dos projetos pedagógicos do ensino médio, cursos técnicos de nível médio e superior tecnológico. A Feteps tem como objetivo desenvolver a visão empreendedora, criativa, inovadora e científico-tecnológica dos alunos. Nível médio e superior tecnológico. A Feteps tem como objetivo desenvolver a visão empreendedora, criativa, inovadora e científico-tecnológica dos alunos.\n\n'
-      'CENTRO PAULA SOUZA\n\n'
-      'O Centro Paula Souza (CPS) é uma autarquia do Governo do Estado de São Paulo, vinculada à Secretaria de Ciência, Tecnologia e Inovação. Presente em 363 municípios, a instituição administra 227 Escolas Técnicas (Etecs) e 77 Faculdades de Tecnologia (Fatecs) estaduais, com mais de 316 mil alunos em cursos técnicos de nível médio e superior tecnológicos.\n\n'
-      'A instituição também é reconhecida como Instituto de Ciência e Tecnologia (ICT), uma organização sem fins lucrativos de administrações públicas ou privadas, que tem como principal objetivo a criação e o incentivo a pesquisas científicas e tecnológicas.\n\n'
-      'ETEC E FATEC\n\n'
-      'Nas Etecs, mais de 226 mil estudantes estão matriculados nos Ensinos Médio, Técnico integrado ao Médio e no Ensino Técnico, incluindo habilitações nas modalidades presencial, semipresencial, online, Educação de Jovens e Adultos (EJA) e especialização técnica. As Etecs oferecem 224 cursos, voltados a todos os setores produtivos públicos e privados.\n\n'
-      'Já as Fatecs atendem mais de 96 mil alunos matriculados em 86 cursos de graduação tecnológica, em diversas áreas, como Construção Civil, Mecânica, Informática, Tecnologia da Informação, Turismo, entre outras.';
+  @override
+  void initState() {
+    super.initState();
 
-  void _onImageTap(int index) {
+    // Inicializa os controladores e animações para cada imagem
+    _controllers = List.generate(4, (index) {
+      return AnimationController(
+        duration: const Duration(milliseconds: 200),
+        vsync: this,
+      );
+    });
+
+    _animations = _controllers.map((controller) {
+      return Tween<double>(begin: 1.0, end: 0.9).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+      );
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    // Dispose de todos os controladores
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onImageTap(int index) async {
+    await Future.delayed(const Duration(milliseconds: 0));
     switch (index) {
       case 0:
         _launchURL('http://feteps.cpscetec.com.br/feteps.php');
@@ -60,7 +76,7 @@ class _SobrePageState extends State<SobrePage> {
         Navigator.pushReplacement(
           context,
           PageTransition(
-              child: const MascotePage(),
+              child: MascotePage(),
               type: PageTransitionType.size,
               alignment: Alignment.center),
         );
@@ -115,153 +131,34 @@ class _SobrePageState extends State<SobrePage> {
           ],
         ),
         endDrawer: MenuPage(),
-        body: Column(
+        body: ListView(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.25,
-              child: CarouselSlider(
-                options: CarouselOptions(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  autoPlay: true,
-                  autoPlayInterval: Duration(seconds: 3),
-                  enlargeCenterPage: true,
+            Column(
+              children: [
+                SizedBox(
+                  height: screenHeight * 0.03,
                 ),
-                items: [
-                  'lib/assets/banner2.png',
-                  'lib/assets/banner1.png',
-                  'lib/assets/banner3.png',
-                  'lib/assets/banner4.png',
-                ].asMap().entries.map((entry) {
-                  int index = entry.key;
-                  String assetPath = entry.value;
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return GestureDetector(
-                        onTap: () => _onImageTap(index),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: themeProvider.getSpecialColor2(),
-                                  width: 2)),
-                          child: Image.asset(
-                            assetPath,
-                            width: MediaQuery.of(context).size.width * 1.0,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
-            TabBar(
-              indicatorColor: const Color(0xFFFFD35F),
-              labelColor: themeProvider.getSpecialColor3(),
-              labelStyle: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(context).size.width * 0.045,
-              ),
-              tabs: const [
-                Tab(text: 'Feteps'),
-                Tab(text: 'Programação'),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner2.png', screenWidth, 0),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner1.png', screenWidth, 1),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner3.png', screenWidth, 2),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner4.png', screenWidth, 3),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
               ],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: screenHeight * 0.025,
-                            ),
-                            child: Image.asset(
-                              'lib/assets/alunos.png',
-                              width: screenWidth * 0.65,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                  ),
-                                  child: Text(
-                                    _isExpanded
-                                        ? _fullText
-                                        : _fullText.substring(0, 850) + '...',
-                                    style: GoogleFonts.poppins(
-                                        fontSize:
-                                            MediaQuery.of(context).size.width *
-                                                0.04,
-                                        color:
-                                            themeProvider.getSpecialColor3()),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isExpanded = !_isExpanded;
-                                  });
-                                },
-                                child: Text(
-                                  _isExpanded ? "Leia Menos" : "Leia Mais",
-                                  style: GoogleFonts.poppins(
-                                    fontSize:
-                                        MediaQuery.of(context).size.width *
-                                            0.045,
-                                    color: const Color(0xFFB6382B),
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: const Color(0xFFB6382B),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
-                  ), // Conteúdo da primeira guia
-                  ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Column(children: [
-                        SizedBox(
-                          height: screenHeight * 0.045,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(screenWidth * 0.025),
-                          child: const EventTable(),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'lib/assets/calendario.png',
-                              width: MediaQuery.of(context).size.width * 0.45,
-                            )
-                          ],
-                        ),
-                      ]),
-                    ],
-                  ), // Conteúdo da segunda guia
-                ],
-              ),
             ),
           ],
         ),
@@ -269,82 +166,33 @@ class _SobrePageState extends State<SobrePage> {
     );
   }
 
-  Future<bool> sair() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences.clear();
-    return true;
-  }
-}
+  Widget _buildImageWithBorder(
+      BuildContext context, String imagePath, double screenWidth, int index) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
-class EventTable extends StatelessWidget {
-  const EventTable({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.9,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2.5),
-        border: Border.all(color: Colors.black),
-      ),
-      child: Table(
-        columnWidths: {
-          0: const FlexColumnWidth(1),
-          1: const FlexColumnWidth(2),
-        },
-        children: [
-          _buildTableRow(
-              '10/10/2023\n25/03/2024',
-              'Submissão dos Trabalhos [Prorrogado]',
-              Color(0xFFFFD35F),
-              context),
-          _buildTableRow('22/04/2024', 'Início da Etapa de Avaliação',
-              Colors.white, context),
-          _buildTableRow('15/05/2024', 'Divulgação dos Finalistas',
-              Color(0xFFFFD35F), context),
-          _buildTableRow(
-              '19, 20, 21 e 22/08/2024',
-              'Feira Presencial: São Paulo Expo - Pavilhão 7',
-              Colors.white,
-              context),
-        ],
-      ),
-    );
-  }
-
-  TableRow _buildTableRow(String date, String description,
-      Color backgroundColor, BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
-    return TableRow(
-      children: [
-        Container(
-          color: backgroundColor,
-          padding:
-              EdgeInsets.all(screenWidth * 0.042), // Aumenta a altura da linha
-          child: Text(
-            date,
-            style: TextStyle(
-                fontSize: screenWidth * 0.03,
-                color: Colors.black,
-                fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () async {
+        // Animação de clique
+        await _controllers[index].forward();
+        await _controllers[index].reverse();
+        _onImageTap(index);
+      },
+      child: ScaleTransition(
+        scale: _animations[index],
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            border: Border.all(
+              color: themeProvider.getSpecialColor3(),
+              width: 3.0,
+            ),
+          ),
+          child: Image.asset(
+            imagePath,
+            width: screenWidth * 0.88,
           ),
         ),
-        Container(
-          color: backgroundColor,
-          padding:
-              EdgeInsets.all(screenWidth * 0.04), // Aumenta a altura da linha
-          child: Text(
-            description,
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: screenWidth * 0.031),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

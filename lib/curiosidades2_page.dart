@@ -151,6 +151,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 1.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -219,6 +236,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 2.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -290,6 +324,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 3.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -357,6 +408,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 4.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -428,6 +496,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 5.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -495,6 +580,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 6.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -566,6 +668,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 7.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -633,6 +752,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 8.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -704,6 +840,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 9.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -771,6 +924,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 10.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -842,6 +1012,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 11.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -909,6 +1096,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 12.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -980,6 +1184,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 13.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -1049,6 +1270,23 @@ class Curiosidade2Page extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 14.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -1116,6 +1354,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 15.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -1189,6 +1444,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 16.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],
@@ -1366,6 +1638,23 @@ class Curiosidade2Page extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.white, width: 2)),
+                                  child: Image.asset(
+                                    'lib/assets/charges/Ods 17.png',
+                                    width: screenWidth * 0.7,
+                                  ),
+                                )
                               ],
                             ),
                           ],

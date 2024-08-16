@@ -40,6 +40,8 @@ class _CadastroInstituicaoPageState extends State<CadastroInstituicaoPage> {
   _loadEstados() async {
     try {
       List<Estado> estados = await Estado.getEstados();
+      estados.sort((a, b) =>
+          a.nome.compareTo(b.nome)); // Ordena a lista alfabeticamente pelo nome
       setState(() {
         _estados = estados;
       });

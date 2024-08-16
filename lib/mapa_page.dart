@@ -47,54 +47,40 @@ class MapaPage extends StatelessWidget {
                   maxScale: 6.0,
                   child: Image.asset(
                     'lib/assets/MapaFeira.png',
-                    width: screenWidth * 0.9,
+                    width: screenWidth * 0.95,
                   ),
                 )
               ],
             ),
           ),
-          SizedBox(
-            height: screenHeight * 0.02,
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(screenWidth * 0.05),
+                child: Text(
+                  'Estandes dos estudantes',
+                  style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.06,
+                      fontWeight: FontWeight.bold,
+                      color: themeProvider.getSpecialColor2()),
+                ),
+              )
+            ],
           ),
           Padding(
-            padding: EdgeInsets.all(screenWidth * 0.05),
+            padding: EdgeInsets.all(screenWidth * 0.025),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding: EdgeInsets.all(screenWidth * 0.03),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF4CA146),
-                    shape: BoxShape.circle,
+                InteractiveViewer(
+                  panEnabled: true,
+                  minScale: 0.5,
+                  maxScale: 6.0,
+                  child: Image.asset(
+                    'lib/assets/estandes.png',
+                    width: screenWidth * 0.95,
                   ),
-                ),
-                SizedBox(width: screenWidth * 0.02),
-                Text(
-                  'Estande de Apoiadores',
-                  style: TextStyle(
-                      fontSize: screenWidth * 0.045,
-                      color: themeProvider.getSpecialColor3()),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(screenWidth * 0.05),
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(screenWidth * 0.03),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFB6382B),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(width: screenWidth * 0.02),
-                Text(
-                  'Estande dos estudantes\n(Cada espaço com 4 estandes)',
-                  style: TextStyle(
-                      fontSize: screenWidth * 0.045,
-                      color: themeProvider.getSpecialColor3()),
-                ),
+                )
               ],
             ),
           ),

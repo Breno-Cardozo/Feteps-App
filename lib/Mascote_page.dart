@@ -1,15 +1,20 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'dart:io';
+import 'package:feteps/Mascote_page.dart';
+import 'package:feteps/Fet_page.dart';
+import 'package:feteps/Teps_page.dart';
+import 'package:feteps/global.dart';
+import 'package:flutter/material.dart';
+import 'package:flutterflow_ui/flutterflow_ui.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/io_client.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:feteps/Temas/theme_provider.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
-import 'package:feteps/participantes_page.dart';
 import 'package:feteps/Menu_Page.dart';
 import 'package:feteps/sobre_page.dart';
-import 'package:feteps/sobrenos_page.dart';
-import 'package:feteps/telainicial_page.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
-import 'package:feteps/Temas/theme_provider.dart';
 
 class MascotePage extends StatefulWidget {
   const MascotePage({super.key});
@@ -19,351 +24,349 @@ class MascotePage extends StatefulWidget {
 }
 
 class _MascotePageState extends State<MascotePage> {
+  int _selectedCardIndex = -1;
+  String tokenLogado = '';
+  int _currentFiveStars = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _recuperarToken();
+  }
+
+  Future<void> _recuperarToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      tokenLogado = prefs.getString('token') ?? '';
+    });
+  }
+
+  Future<void> _getCurrentVotes(int idProjeto) async {
+    final String url = GlobalPageState.Url +
+        '/appfeteps/pages/Project/getById.php?id=$idProjeto';
+
+    final httpClient = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    try {
+      final response = await httpClient.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> projectData = jsonDecode(response.body);
+        setState(() {
+          _currentFiveStars = projectData['five_stars'] ?? 0;
+        });
+      } else {
+        print('Erro ao buscar votos: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Erro ao buscar votos: $e');
+    }
+  }
+
+  Future<void> enviarVoto() async {
+    final String apiUrl =
+        GlobalPageState.Url + '/appfeteps/pages/Project/update.php';
+    String idProjeto;
+
+    if (_selectedCardIndex == 0) {
+      idProjeto = '3000';
+    } else if (_selectedCardIndex == 1) {
+      idProjeto = '3001';
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, selecione um mascote'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $tokenLogado',
+      'Content-Type': 'multipart/form-data',
+    };
+
+    final httpClient = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    var request = http.MultipartRequest('POST', Uri.parse(apiUrl))
+      ..headers.addAll(headers)
+      ..fields['id'] = idProjeto
+      ..fields['five_stars'] = (_currentFiveStars + 1).toString();
+
+    try {
+      final response = await httpClient.send(request);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Voto realizado com sucesso',
+              style: TextStyle(color: Colors.black),
+            ),
+            backgroundColor: Color(0xFFFFD35F),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao realizar voto: ${response.reasonPhrase}'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Erro ao realizar voto: $e'),
+            backgroundColor: Colors.redAccent),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    String logoAsset = themeProvider.getLogoAsset();
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar1_page(
-            screenWidth: screenWidth, destinationPage: SobrePage()),
-        endDrawer: MenuPage(),
-        body: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.25,
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
+
+    return Scaffold(
+      appBar:
+          AppBar1_page(screenWidth: screenWidth, destinationPage: SobrePage()),
+      endDrawer: MenuPage(),
+      body: ListView(
+        children: [
+          Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.3,
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
                         border: Border(
-                            top: BorderSide(
-                                color: Color.fromARGB(255, 49, 163, 194),
-                                width: 2),
-                            bottom: BorderSide(
-                                color: Color.fromARGB(255, 49, 163, 194),
-                                width: 2))),
-                    child: Image.asset(
-                      'lib/assets/bannermascote.png',
-                      width: MediaQuery.of(context).size.width * 1.0,
+                          top: BorderSide(
+                              color: themeProvider.getBorderColor(), width: 2),
+                          bottom: BorderSide(
+                              color: themeProvider.getBorderColor(), width: 2),
+                        ),
+                      ),
+                      child: Image.asset(
+                        'lib/assets/banners/banner4.png',
+                        width: MediaQuery.of(context).size.width * 1.0,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Vote no seu mascote favorito!',
+                    style: GoogleFonts.poppins(
+                      color: themeProvider.getSpecialColor(),
+                      fontWeight: FontWeight.bold,
+                      fontSize: screenWidth * 0.05,
                     ),
                   )
                 ],
               ),
-            ),
-            TabBar(
-              indicatorColor: Color.fromARGB(255, 49, 163, 194),
-              labelColor: themeProvider.getSpecialColor3(),
-              labelStyle: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(context).size.width * 0.05,
+              SizedBox(
+                height: screenHeight * 0.05,
               ),
-              tabs: const [
-                Tab(text: 'Fet'),
-                Tab(text: 'Teps'),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: screenHeight * 0.04,
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedCardIndex = 0;
+                            });
+                            _getCurrentVotes(3000);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF830000),
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: _selectedCardIndex == 0
+                                    ? Color.fromARGB(255, 247, 186, 65)
+                                    : Colors.transparent,
+                                width: 4,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3), // Sombra para baixo
+                                ),
+                              ],
                             ),
-                            child: Image.asset(
-                              'lib/assets/Fet.png',
-                              width: screenWidth * 0.35,
-                            ),
-                          ),
-                          SizedBox(
-                            height: screenHeight * 0.03,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'CRIADORES:\nVitória das Neves Oliveira\nArthur Barros Martins Pereira',
-                                style: GoogleFonts.poppins(
-                                    color: Color.fromARGB(255, 49, 163, 194),
+                            width: screenWidth * 0.4,
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    'lib/assets/Fet/Fet.png',
+                                    height: screenHeight * 0.18,
+                                  ),
+                                ),
+                                Text(
+                                  'Fet',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
                                     fontSize: screenWidth * 0.045,
-                                    fontWeight: FontWeight.bold),
-                              )
-                            ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(
-                            height: screenHeight * 0.09,
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: FetPage(),
+                                  type: PageTransitionType.size,
+                                  alignment: Alignment.center),
+                            );
+                          },
+                          child: Text(
+                            'História',
+                            style: GoogleFonts.poppins(
+                              color: themeProvider.getSpecialColor3(),
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.045,
+                              decoration: TextDecoration.underline,
+                              decorationColor: themeProvider.getBorderColor(),
+                            ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Era uma vez, um pequeno robô chamado Fet.',
-                                style: GoogleFonts.roboto(
-                                    color: themeProvider.getSpecialColor(),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedCardIndex = 1;
+                            });
+                            _getCurrentVotes(3001);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1A5B97),
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: _selectedCardIndex == 1
+                                    ? Color.fromARGB(255, 247, 186, 65)
+                                    : Colors.transparent,
+                                width: 4,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3), // Sombra para baixo
+                                ),
+                              ],
+                            ),
+                            width: screenWidth * 0.4,
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    'lib/assets/Teps/Teps.png',
+                                    height: screenHeight * 0.18,
+                                  ),
+                                ),
+                                Text(
+                                  'Teps',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: screenWidth * 0.042),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: screenHeight * 0.02,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: screenWidth * 0.8,
-                                  child: Text(
-                                    'Inicialmente, ele era apenas uma caixa como lhos e rodas, projetado para tarefas simples. No entanto, ao passar de dono para dono, Fet foi modificado e aprimorado, ganhando novos recursos e habilidades.',
-                                    style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.04,
-                                        color:
-                                            themeProvider.getSpecialColor3()),
-                                    textAlign: TextAlign.center,
+                                    fontSize: screenWidth * 0.045,
                                   ),
                                 ),
-                              )
-                            ],
+                              ],
+                            ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: screenWidth * 0.8,
-                                  child: Text(
-                                    'Com braços longos e elásticos, mãos curvas e a capacidade de se auto-modificar, Fet podia construir qualquer engenhoca maluca e alterar sua própria composição e cores. Sua aparência, com tronco vermelho, rodas azuis e olhos brilhantes, refletia sua natureza atrapalhada e engenhosa.',
-                                    style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.04,
-                                        color:
-                                            themeProvider.getSpecialColor3()),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              )
-                            ],
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: TepsPage(),
+                                  type: PageTransitionType.size,
+                                  alignment: Alignment.center),
+                            );
+                          },
+                          child: Text(
+                            'História',
+                            style: GoogleFonts.poppins(
+                              color: themeProvider.getSpecialColor3(),
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.045,
+                              decoration: TextDecoration.underline,
+                              decorationColor: themeProvider.getBorderColor(),
+                            ),
                           ),
-                          SizedBox(
-                            height: screenHeight * 0.03,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Lição',
-                                style: GoogleFonts.roboto(
-                                    color: themeProvider.getSpecialColor(),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: screenWidth * 0.045),
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: screenWidth * 0.85,
-                                  child: Text(
-                                    'A história de Fet mostra como uma pequena ideia pode se transformar em algo incrível, exemplificando a importância de apoiar a criatividade e a inovação. Como Fet sempre diz:',
-                                    style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.04,
-                                        color:
-                                            themeProvider.getSpecialColor3()),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: screenWidth * 0.8,
-                                child: Text(
-                                  '"É de uma pequena ideia que surge uma grande criação."',
-                                  style: GoogleFonts.poppins(
-                                      color: themeProvider.getSpecialColor(),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: screenWidth * 0.042),
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: screenHeight * 0.05,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ), // Conteúdo da primeira guia
-                  ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Column(children: [
-                        SizedBox(
-                          height: screenHeight * 0.03,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'lib/assets/Teps.png',
-                              width: MediaQuery.of(context).size.width * 0.65,
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.055,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'CRIADORA:\nEmily Takara',
-                              style: GoogleFonts.poppins(
-                                  color: Color.fromARGB(255, 49, 163, 194),
-                                  fontSize: screenWidth * 0.045,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.114,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Era uma vez, um pequeno robô chamado Teps.',
-                              style: GoogleFonts.roboto(
-                                  color: themeProvider.getSpecialColor(),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: screenWidth * 0.042),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.02,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                width: screenWidth * 0.8,
-                                child: Text(
-                                  'Criado pelos estudantes da CPS para ajudar e apoiar todos na feira tecnológica.',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.04,
-                                      color: themeProvider.getSpecialColor3()),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                width: screenWidth * 0.8,
-                                child: Text(
-                                  'Teps pode esticar os braços e transformar suas mãos em qualquer ferramenta necessária, sendo sempre amigável, prestativo e carismático.',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.04,
-                                      color: themeProvider.getSpecialColor3()),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                width: screenWidth * 0.8,
-                                child: Text(
-                                  'Com um design fofo e redondo, antenas em formato de "F", óculos com detalhes de engrenagem e mãos de garra, Teps tem uma paleta de cores inspirada nos logos da FETEPS e do CPS',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.04,
-                                      color: themeProvider.getSpecialColor3()),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.03,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Lição',
-                              style: GoogleFonts.roboto(
-                                  color: themeProvider.getSpecialColor(),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: screenWidth * 0.045),
-                            )
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                width: screenWidth * 0.85,
-                                child: Text(
-                                  'Com tecnologia no núcleo e carisma no circuito, Teps na FETEPS, o encanto é o intuito!',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: screenWidth * 0.04,
-                                      color: themeProvider.getSpecialColor3()),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.05,
-                        ),
-                      ]),
-                    ],
-                  ), // Conteúdo da segunda guia
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: enviarVoto,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: themeProvider.getSpecialColor2(),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Text(
+                        'Votar',
+                        style: GoogleFonts.oswald(
+                          color: themeProvider.getSpecialColor21(),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        ],
       ),
     );
-  }
-
-  Future<bool> sair() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences.clear();
-    return true;
   }
 }
