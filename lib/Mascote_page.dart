@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:feteps/Mascote_page.dart';
 import 'package:feteps/Fet_page.dart';
 import 'package:feteps/Teps_page.dart';
 import 'package:feteps/global.dart';
@@ -26,12 +25,13 @@ class MascotePage extends StatefulWidget {
 class _MascotePageState extends State<MascotePage> {
   int _selectedCardIndex = -1;
   String tokenLogado = '';
-  int _currentFiveStars = 0;
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
     _recuperarToken();
+    _recuperarUserId();
   }
 
   Future<void> _recuperarToken() async {
@@ -41,41 +41,17 @@ class _MascotePageState extends State<MascotePage> {
     });
   }
 
-  Future<void> _getCurrentVotes(int idProjeto) async {
-    final String url = GlobalPageState.Url +
-        '/appfeteps/pages/Project/getById.php?id=$idProjeto';
-
-    final httpClient = IOClient(HttpClient()
-      ..badCertificateCallback =
-          (cert, host, port) => true); // ignore certificate verification
-
-    try {
-      final response = await httpClient.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> projectData = jsonDecode(response.body);
-        setState(() {
-          _currentFiveStars = projectData['five_stars'] ?? 0;
-        });
-      } else {
-        print('Erro ao buscar votos: ${response.reasonPhrase}');
-      }
-    } catch (e) {
-      print('Erro ao buscar votos: $e');
-    }
+  Future<void> _recuperarUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('idUsuario') ?? '';
+    });
   }
 
   Future<void> enviarVoto() async {
-    final String apiUrl =
-        GlobalPageState.Url + '/appfeteps/pages/Project/update.php';
-    String idProjeto;
-
-    if (_selectedCardIndex == 0) {
-      idProjeto = '3000';
-    } else if (_selectedCardIndex == 1) {
-      idProjeto = '3001';
-    } else {
+    if (_selectedCardIndex == -1) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Por favor, selecione um mascote'),
           backgroundColor: Colors.redAccent,
         ),
@@ -83,26 +59,48 @@ class _MascotePageState extends State<MascotePage> {
       return;
     }
 
+    String projectId = _selectedCardIndex == 0 ? '3000' : '3001';
+
+    // Verifica se o usuário já votou
+    bool jaVotou = await verificarVoto();
+    if (jaVotou) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Você já votou!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    final String apiUrl =
+        'https://app.feteps.cpscetec.com.br/appfeteps/pages/Users/saveVote.php';
+
     Map<String, String> headers = {
       'Authorization': 'Bearer $tokenLogado',
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, dynamic> body = {
+      'user_id': userId,
+      'project_id': projectId,
+      'score': 1,
     };
 
     final httpClient = IOClient(HttpClient()
       ..badCertificateCallback =
           (cert, host, port) => true); // ignore certificate verification
 
-    var request = http.MultipartRequest('POST', Uri.parse(apiUrl))
-      ..headers.addAll(headers)
-      ..fields['id'] = idProjeto
-      ..fields['five_stars'] = (_currentFiveStars + 1).toString();
-
     try {
-      final response = await httpClient.send(request);
+      final response = await httpClient.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text(
               'Voto realizado com sucesso',
               style: TextStyle(color: Colors.black),
@@ -111,20 +109,60 @@ class _MascotePageState extends State<MascotePage> {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao realizar voto: ${response.reasonPhrase}'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+        final responseBody = jsonDecode(response.body);
+        if (responseBody['type'] == 'error' &&
+            responseBody['message'].contains('Duplicate entry')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Seu voto já foi computado'),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text('Erro ao realizar voto: ${responseBody['message']}'),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Erro ao realizar voto: $e'),
-            backgroundColor: Colors.redAccent),
+          content: Text('Erro ao realizar voto: $e'),
+          backgroundColor: Colors.redAccent,
+        ),
       );
     }
+  }
+
+  Future<bool> verificarVoto() async {
+    final String apiUrl =
+        'https://app.feteps.cpscetec.com.br/appfeteps/pages/Users/getVotes.php?id=$userId';
+
+    final httpClient = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    try {
+      final response = await httpClient.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        for (var vote in responseData['response']) {
+          final projectName = vote['project']['name'];
+          if (projectName == 'FET' || projectName == 'TEPS') {
+            return true;
+          }
+        }
+      } else {
+        print('Erro ao verificar votos: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Erro ao verificar votos: $e');
+    }
+    return false;
   }
 
   @override
@@ -192,7 +230,6 @@ class _MascotePageState extends State<MascotePage> {
                             setState(() {
                               _selectedCardIndex = 0;
                             });
-                            _getCurrentVotes(3000);
                           },
                           child: Container(
                             margin: EdgeInsets.all(8.0),
@@ -202,7 +239,7 @@ class _MascotePageState extends State<MascotePage> {
                               borderRadius: BorderRadius.circular(10.0),
                               border: Border.all(
                                 color: _selectedCardIndex == 0
-                                    ? Color.fromARGB(255, 247, 186, 65)
+                                    ? const Color.fromARGB(255, 247, 186, 65)
                                     : Colors.transparent,
                                 width: 4,
                               ),
@@ -211,7 +248,7 @@ class _MascotePageState extends State<MascotePage> {
                                   color: Colors.black.withOpacity(0.2),
                                   spreadRadius: 2,
                                   blurRadius: 6,
-                                  offset: Offset(0, 3), // Sombra para baixo
+                                  offset: const Offset(0, 3),
                                 ),
                               ],
                             ),
@@ -219,7 +256,7 @@ class _MascotePageState extends State<MascotePage> {
                             child: Column(
                               children: [
                                 Container(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Image.asset(
                                     'lib/assets/Fet/Fet.png',
                                     height: screenHeight * 0.18,
@@ -242,7 +279,7 @@ class _MascotePageState extends State<MascotePage> {
                             Navigator.pushReplacement(
                               context,
                               PageTransition(
-                                  child: FetPage(),
+                                  child: const FetPage(),
                                   type: PageTransitionType.size,
                                   alignment: Alignment.center),
                             );
@@ -267,7 +304,6 @@ class _MascotePageState extends State<MascotePage> {
                             setState(() {
                               _selectedCardIndex = 1;
                             });
-                            _getCurrentVotes(3001);
                           },
                           child: Container(
                             margin: EdgeInsets.all(8.0),
@@ -277,7 +313,7 @@ class _MascotePageState extends State<MascotePage> {
                               borderRadius: BorderRadius.circular(10.0),
                               border: Border.all(
                                 color: _selectedCardIndex == 1
-                                    ? Color.fromARGB(255, 247, 186, 65)
+                                    ? const Color.fromARGB(255, 247, 186, 65)
                                     : Colors.transparent,
                                 width: 4,
                               ),
@@ -286,7 +322,7 @@ class _MascotePageState extends State<MascotePage> {
                                   color: Colors.black.withOpacity(0.2),
                                   spreadRadius: 2,
                                   blurRadius: 6,
-                                  offset: Offset(0, 3), // Sombra para baixo
+                                  offset: const Offset(0, 3),
                                 ),
                               ],
                             ),
@@ -294,7 +330,7 @@ class _MascotePageState extends State<MascotePage> {
                             child: Column(
                               children: [
                                 Container(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Image.asset(
                                     'lib/assets/Teps/Teps.png',
                                     height: screenHeight * 0.18,
@@ -317,7 +353,7 @@ class _MascotePageState extends State<MascotePage> {
                             Navigator.pushReplacement(
                               context,
                               PageTransition(
-                                  child: TepsPage(),
+                                  child: const TepsPage(),
                                   type: PageTransitionType.size,
                                   alignment: Alignment.center),
                             );
@@ -362,7 +398,10 @@ class _MascotePageState extends State<MascotePage> {
                     ),
                   )
                 ],
-              )
+              ),
+              SizedBox(
+                height: screenHeight * 0.07,
+              ),
             ],
           ),
         ],

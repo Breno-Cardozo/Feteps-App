@@ -75,7 +75,7 @@ class _MenuPageState extends State<MenuPage> {
               child: ListView(
                 children: <Widget>[
                   SizedBox(
-                    height: screenHeight * 0.18,
+                    height: screenHeight * 0.2,
                     child: DrawerHeader(
                       decoration: BoxDecoration(
                           color: Theme.of(context).scaffoldBackgroundColor),
@@ -95,26 +95,25 @@ class _MenuPageState extends State<MenuPage> {
                                           top: screenHeight * 0.015),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: Colors.transparent,
                                           shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: themeProvider
-                                                .getSpecialColor2(),
-                                            width: 1,
-                                          ),
                                         ),
                                         child: ClipOval(
-                                            child: Image.asset(
-                                          'lib/assets/user2.png',
-                                        )),
+                                          child: SvgPicture.network(
+                                            'https://api.dicebear.com/9.x/bottts/svg?seed=$nomeUsuario',
+                                            height: screenHeight * 0.12,
+                                            placeholderBuilder: (context) =>
+                                                CircularProgressIndicator(),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                               Positioned(
-                                bottom: screenHeight * 0.02,
-                                right: screenWidth * 0.3,
+                                bottom: screenHeight * 0.03,
+                                right: screenWidth * 0.25,
                                 child: Container(
                                   width: screenWidth * 0.3,
                                   padding: EdgeInsets.all(screenWidth * 0.02),

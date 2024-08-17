@@ -178,8 +178,6 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
     }
   }
 
-  
-
   void filterOptions(String query) {
     setState(() {
       searchQuery = query;
@@ -324,7 +322,12 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
                                                   .getSpecialColor3()),
                                         ),
                                       );
-                                    }).toList(),
+                                    }).toList()
+                                      ..sort((a, b) {
+                                        final textA = (a.child as Text).data!;
+                                        final textB = (b.child as Text).data!;
+                                        return textA.compareTo(textB);
+                                      }),
                                     onChanged: (value) {
                                       setState(() {
                                         selectedItem = value;

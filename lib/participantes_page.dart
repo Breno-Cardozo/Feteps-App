@@ -70,7 +70,7 @@ class _ParticipantesPageState extends State<ParticipantesPage> {
         HttpClient()..badCertificateCallback = (cert, host, port) => true);
 
     final response = await client.get(Uri.parse(GlobalPageState.Url +
-        '/appfeteps/pages/Project/get.php?classification=$classification&limit=50'));
+        '/appfeteps/pages/Project/get.php?classification=$classification&limit=200'));
 
     if (response.statusCode == 200) {
       final List<dynamic> projects = json.decode(response.body)['response'];
