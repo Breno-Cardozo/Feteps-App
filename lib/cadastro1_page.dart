@@ -139,7 +139,7 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
             [];
       }
     });
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
