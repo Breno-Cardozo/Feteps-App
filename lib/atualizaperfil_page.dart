@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feteps/appbar/appbar2_page.dart';
 import 'package:feteps/global.dart';
 import 'package:feteps/perfil_page.dart';
@@ -5,11 +7,14 @@ import 'package:feteps/loginfeteps_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
+import 'Apis/cidades.dart';
+import 'Apis/estados.dart';
 
 class AtualizarDadosPage extends StatefulWidget {
   const AtualizarDadosPage({super.key});
@@ -20,13 +25,53 @@ class AtualizarDadosPage extends StatefulWidget {
 
 class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
   final _userNameController = TextEditingController();
-  final _stateController = TextEditingController();
-  final _cityController = TextEditingController();
+  final _cidadeController = TextEditingController();
+  final _estadoController = TextEditingController();
   final _institutionCodeController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = '';
   String idUsuario = '';
   String tokenLogado = '';
+  List<Estado> _estados = [];
+  List<Cidade> _cidadesDoEstado = [];
+  String? _selectedEstado;
+  String _nomeEstado = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEstados();
+  }
+
+  _loadEstados() async {
+    try {
+      List<Estado> estados = await Estado.getEstados();
+      estados.sort((a, b) =>
+          a.nome.compareTo(b.nome)); // Ordena a lista alfabeticamente pelo nome
+      setState(() {
+        _estados = estados;
+      });
+    } catch (e) {
+      print('Erro ao carregar estados: $e');
+    }
+  }
+
+  _loadCidades(String estadoId) async {
+    try {
+      List<Cidade> cidades = await Cidade.getCidades(estadoId);
+      setState(() {
+        _cidadesDoEstado = cidades;
+      });
+      // Buscar o nome do estado com base no ID
+      Estado? estado = _estados.firstWhere((e) => e.id == estadoId,
+          orElse: () => Estado(id: '', nome: ''));
+      setState(() {
+        _nomeEstado = estado.nome;
+      });
+    } catch (e) {
+      print('Erro ao carregar cidades: $e');
+    }
+  }
 
   Future<bool> _atualizarDados() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -40,6 +85,10 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
       _errorMessage = '';
     });
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(GlobalPageState.Url + '/appfeteps/pages/Users/updateUser.php'),
@@ -50,33 +99,50 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
 
     request.fields['userId'] = idUsuario;
     request.fields['userName'] = _userNameController.text;
-    request.fields['state'] = _stateController.text;
-    request.fields['city'] = _cityController.text;
+    request.fields['state'] = _nomeEstado;
+    request.fields['city'] = _cidadeController.text;
     request.fields['idInstitution'] = _institutionCodeController.text;
 
-    final response = await request.send();
+    try {
+      final response = await client.send(request);
 
-    setState(() {
-      _isLoading = false;
-    });
+      setState(() {
+        _isLoading = false;
+      });
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(await response.stream.bytesToString());
-      if (responseData['type'] == 'success' &&
-          responseData['message'] == 'Operation completed successfully!') {
-        Future.delayed(const Duration(seconds: 3), () {
-          _deucerto();
-        });
-        return true;
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(await response.stream.bytesToString());
+        if (responseData['type'] == 'success' &&
+            responseData['message'] == 'Operation completed successfully!') {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                'Dados atualizados com sucesso',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.roboto(
+                    color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: const Color(0xFFFFD35F),
+              duration: const Duration(seconds: 3)));
+          Future.delayed(const Duration(seconds: 2), () {
+            _deucerto();
+          });
+          return true;
+        } else {
+          setState(() {
+            _errorMessage = responseData['message'];
+          });
+          return false;
+        }
       } else {
         setState(() {
-          _errorMessage = responseData['message'];
+          _errorMessage = 'Falha ao atualizar os dados';
         });
         return false;
       }
-    } else {
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Falha ao atualizar os dados';
+        _isLoading = false;
+        _errorMessage = 'Erro ao atualizar os dados: $e';
       });
       return false;
     }
@@ -93,14 +159,6 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
       (route) => false,
     );
   }
-
-  final snackBar = const SnackBar(
-    content: Text(
-      'Dados atualizados com sucesso',
-      textAlign: TextAlign.center,
-    ),
-    backgroundColor: Colors.redAccent,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -157,18 +215,16 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
               ),
               buildTextField(
                 context,
-                labelText: 'Estado:',
-                controller: _stateController,
-              ),
-              buildTextField(
-                context,
-                labelText: 'Cidade:',
-                controller: _cityController,
-              ),
-              buildTextField(
-                context,
                 labelText: 'Cod Instituição:',
                 controller: _institutionCodeController,
+              ),
+              _buildDropdownEstado(screenWidth, screenHeight),
+              SizedBox(
+                height: screenHeight * 0.02,
+              ),
+              _buildDropdownCidade(screenWidth, screenHeight),
+              SizedBox(
+                height: screenHeight * 0.02,
               ),
               _errorMessage.isNotEmpty
                   ? Padding(
@@ -203,7 +259,7 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
                                   bool dadosAtualizados =
                                       await _atualizarDados();
                                   if (dadosAtualizados) {
-                                    _deucerto;
+                                    _deucerto();
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
@@ -245,7 +301,7 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
 
     return Padding(
       padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.025),
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -257,7 +313,7 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
                 labelText: labelText,
                 labelStyle: GoogleFonts.poppins(
                   color: themeProvider.getSpecialColor3(),
-                  fontSize: screenWidth * 0.045,
+                  fontSize: screenWidth * 0.04,
                   fontWeight: FontWeight.bold,
                 ),
                 border: UnderlineInputBorder(
@@ -274,6 +330,118 @@ class _AtualizarDadosPageState extends State<AtualizarDadosPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDropdownEstado(double screenWidth, double screenHeight) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: screenWidth * 0.8,
+          child: DropdownButtonFormField<String>(
+            dropdownColor: Colors.grey,
+            decoration: InputDecoration(
+              labelText: 'Estado:',
+              labelStyle: GoogleFonts.roboto(
+                color: themeProvider.getSpecialColor3(),
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.045,
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
+              ),
+            ),
+            icon: Icon(
+              Icons.arrow_drop_down_sharp,
+              color: themeProvider.getSpecialColor3(),
+            ),
+            value: _selectedEstado,
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedEstado = newValue;
+                _estadoController.text = newValue!;
+                _loadCidades(newValue);
+              });
+            },
+            items: _estados.map((estado) {
+              return DropdownMenuItem<String>(
+                value: estado.id,
+                child: Text(
+                  estado.nome,
+                  style: TextStyle(color: themeProvider.getSpecialColor3()),
+                ),
+              );
+            }).toList(),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, selecione um estado.';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdownCidade(double screenWidth, double screenHeight) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: screenWidth * 0.8,
+          child: DropdownButtonFormField<String>(
+            dropdownColor: Colors.grey,
+            decoration: InputDecoration(
+              labelText: 'Cidade:',
+              labelStyle: GoogleFonts.roboto(
+                color: themeProvider.getSpecialColor3(),
+                fontWeight: FontWeight.bold,
+                fontSize: screenWidth * 0.045,
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: themeProvider.getBorderColor()),
+              ),
+            ),
+            icon: Icon(
+              Icons.arrow_drop_down_sharp,
+              color: themeProvider.getSpecialColor3(),
+            ),
+            value: _cidadeController.text.isNotEmpty
+                ? _cidadeController.text
+                : null,
+            onChanged: (String? newValue) {
+              setState(() {
+                _cidadeController.text = newValue!;
+              });
+            },
+            items: _cidadesDoEstado.map((cidade) {
+              return DropdownMenuItem<String>(
+                value: cidade.nome,
+                child: Text(
+                  cidade.nome,
+                  style: TextStyle(color: themeProvider.getSpecialColor3()),
+                ),
+              );
+            }).toList(),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, selecione uma cidade.';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:feteps/appbar/appbar2_page.dart';
 import 'package:feteps/global.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
@@ -48,6 +52,10 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
       _errorMessage = '';
     });
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(
@@ -61,30 +69,45 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
     request.fields['cpf'] = _currentPasswordController.text;
     request.fields['newPassword'] = _newPasswordController.text;
 
-    final response = await request.send();
+    try {
+      final response = await client.send(request);
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(await response.stream.bytesToString());
-      print('Response data: $responseData');
-      if (responseData['type'] == 'success' &&
-          responseData['message'] == 'Password updated') {
-        Future.delayed(const Duration(seconds: 3), () {
-          _logout();
-        });
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(await response.stream.bytesToString());
+        print('Response data: $responseData');
+        if (responseData['type'] == 'success' &&
+            responseData['message'] == 'Password updated') {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                'Senha alterada com sucesso',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.roboto(
+                    color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: const Color(0xFFFFD35F),
+              duration: const Duration(seconds: 3)));
+          Future.delayed(const Duration(seconds: 2), () {
+            _logout();
+          });
+        } else {
+          setState(() {
+            _errorMessage = responseData['message'];
+          });
+        }
       } else {
         setState(() {
-          _errorMessage = responseData['message'];
+          _errorMessage = 'Falha ao alterar a senha';
         });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Falha ao alterar a senha';
+        _errorMessage = 'Erro ao alterar a senha: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   Future<void> _logout() async {
@@ -141,6 +164,10 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                     SizedBox(
                       width: screenWidth * 0.85,
                       child: TextFormField(
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
+                        keyboardType: TextInputType.number,
                         controller: _currentPasswordController,
                         decoration: InputDecoration(
                           labelText: 'Digite seu cpf:',
@@ -159,7 +186,6 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 width: screenWidth * 0.005),
                           ),
                         ),
-                        obscureText: true,
                       ),
                     ),
                   ],

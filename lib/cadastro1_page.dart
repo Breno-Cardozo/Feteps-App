@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/cadastroInstitu_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'cadastro2_page.dart';
 import 'telainicial_page.dart';
 import 'global.dart';
@@ -49,6 +52,32 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
         '/appfeteps/pages/Institution/get.php?type=OUTROS&limit=300',
   };
 
+  Future<http.Response> getApiData(String url) async {
+    final client = IOClient(
+        HttpClient()..badCertificateCallback = (cert, host, port) => true);
+    // ignore certificate verification
+    return await client.get(Uri.parse(url));
+  }
+
+  Future<void> carregarDados() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    for (var tipo in apiUrls.keys) {
+      final response = await getApiData(apiUrls[tipo]!);
+      final jsonData = jsonDecode(response.body);
+      setState(() {
+        options[tipo] =
+            jsonData.map((item) => item as Map<String, dynamic>).toList();
+      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +85,11 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
   }
 
   Future<void> fetchItems() async {
-    final response = await http.get(
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
+    final response = await client.get(
         Uri.parse(GlobalPageState.Url + '/appfeteps/pages/TypesUser/get.php'));
 
     if (response.statusCode == 200) {
@@ -64,12 +97,35 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
 
       if (decodedData is List<dynamic>) {
         setState(() {
-          items = decodedData.cast<Map<String, dynamic>>();
+          items = decodedData.cast<Map<String, dynamic>>().where((item) {
+            final description = item['description'].toString().toLowerCase();
+            return description != 'administrador' &&
+                description != 'apoio especial' &&
+                description != 'patrocinador especial' &&
+                description != 'patrocinador diamante' &&
+                description != 'patrocinador ouro' &&
+                description != 'patrocinador prata' &&
+                description != 'apoio institucional' &&
+                description != 'patrocinador master' &&
+                description != 'apoio comunicação e mídia';
+          }).toList();
         });
       } else if (decodedData is Map<String, dynamic> &&
           decodedData.containsKey('response')) {
         setState(() {
-          items = List<Map<String, dynamic>>.from(decodedData['response']);
+          items = List<Map<String, dynamic>>.from(decodedData['response'])
+              .where((item) {
+            final description = item['description'].toString().toLowerCase();
+            return description != 'administrador' &&
+                description != 'apoio especial' &&
+                description != 'patrocinador especial' &&
+                description != 'patrocinador diamante' &&
+                description != 'patrocinador ouro' &&
+                description != 'patrocinador prata' &&
+                description != 'apoio institucional' &&
+                description != 'patrocinador master' &&
+                description != 'apoio comunicação e mídia';
+          }).toList();
         });
       } else {
         throw Exception(
@@ -86,7 +142,7 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
     });
 
     try {
-      final response = await http.get(Uri.parse(apiUrls[type]!));
+      final response = await getApiData(apiUrls[type]!);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -98,12 +154,8 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
                   .toList();
 
           institutions.sort((a, b) {
-            String cleanA = a['name']
-                .toUpperCase()
-                .replaceFirst(RegExp(r'^PROFESSOR(A)? '), '');
-            String cleanB = b['name']
-                .toUpperCase()
-                .replaceFirst(RegExp(r'^PROFESSOR(A)? '), '');
+            String cleanA = a['name'];
+            String cleanB = b['name'];
             return cleanA.compareTo(cleanB);
           });
 
@@ -155,21 +207,33 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                        child: const TelaInicialPage(),
-                        type: PageTransitionType.leftToRightWithFade,
-                      ),
-                    );
-                  },
-                  icon: Icon(
-                    size: MediaQuery.of(context).size.width * 0.075,
-                    Icons.arrow_back_sharp,
-                    color: themeProvider.getSpecialColor3(),
-                  )),
+              WillPopScope(
+                onWillPop: () async {
+                  Navigator.pushReplacement(
+                    context,
+                    PageTransition(
+                      child: TelaInicialPage(),
+                      type: PageTransitionType.leftToRightWithFade,
+                    ),
+                  );
+                  return false;
+                },
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                          child: const TelaInicialPage(),
+                          type: PageTransitionType.leftToRightWithFade,
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      size: MediaQuery.of(context).size.width * 0.075,
+                      Icons.arrow_back_sharp,
+                      color: themeProvider.getSpecialColor3(),
+                    )),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0, left: 20, right: 20),
                 child: Image.asset(
@@ -258,7 +322,12 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
                                                   .getSpecialColor3()),
                                         ),
                                       );
-                                    }).toList(),
+                                    }).toList()
+                                      ..sort((a, b) {
+                                        final textA = (a.child as Text).data!;
+                                        final textB = (b.child as Text).data!;
+                                        return textA.compareTo(textB);
+                                      }),
                                     onChanged: (value) {
                                       setState(() {
                                         selectedItem = value;
@@ -352,32 +421,6 @@ class _Cadastro1PageState extends State<Cadastro1Page> {
                                   )
                                 : Column(
                                     children: [
-                                      Padding(
-                                          padding: EdgeInsets.only(
-                                            bottom: screenHeight * 0.035,
-                                          ),
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                              labelText:
-                                                  'Pesquisar instituição',
-                                              labelStyle: TextStyle(
-                                                color: themeProvider
-                                                    .getSpecialColor2(),
-                                                fontSize: screenWidth * 0.0425,
-                                              ),
-                                              border:
-                                                  const OutlineInputBorder(),
-                                              focusedBorder:
-                                                  const OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Color(0xFF0E414F)),
-                                              ),
-                                              suffixIcon: Icon(Icons.search,
-                                                  color: themeProvider
-                                                      .getSpecialColor2()),
-                                            ),
-                                            onChanged: filterOptions,
-                                          )),
                                       SizedBox(
                                         height: screenHeight * 0.13,
                                         child: DropdownButtonFormField<String>(

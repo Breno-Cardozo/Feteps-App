@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feteps/DetalheProject_page.dart';
 import 'package:feteps/Menu_Page.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
@@ -6,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'global.dart';
 import 'package:provider/provider.dart';
@@ -31,11 +35,22 @@ class _ParticipantesPageState extends State<ParticipantesPage> {
   @override
   void initState() {
     super.initState();
+    _loadCache();
     _fetchProjects();
     _searchController.addListener(() {
       setState(() {
         _searchTerm = _searchController.text;
       });
+    });
+  }
+
+  Future<void> _loadCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _projectsCache["ETEC"] = json.decode(prefs.getString('ETEC') ?? '[]');
+      _projectsCache["FATEC"] = json.decode(prefs.getString('FATEC') ?? '[]');
+      _projectsCache["OUTROS"] = json.decode(prefs.getString('OUTROS') ?? '[]');
+      _isLoading = false;
     });
   }
 
@@ -51,16 +66,26 @@ class _ParticipantesPageState extends State<ParticipantesPage> {
   }
 
   Future<void> _fetchProjectsByClassification(String classification) async {
-    final response = await http.get(Uri.parse(GlobalPageState.Url +
-        '/appfeteps/pages/Project/get.php?classification=$classification&limit=50'));
+    final client = IOClient(
+        HttpClient()..badCertificateCallback = (cert, host, port) => true);
+
+    final response = await client.get(Uri.parse(GlobalPageState.Url +
+        '/appfeteps/pages/Project/get.php?classification=$classification&limit=200'));
 
     if (response.statusCode == 200) {
+      final List<dynamic> projects = json.decode(response.body)['response'];
       setState(() {
-        _projectsCache[classification] = json.decode(response.body)['response'];
+        _projectsCache[classification] = projects;
       });
+      _saveCache(classification, projects);
     } else {
       throw Exception('Falha ao carregar os projetos');
     }
+  }
+
+  Future<void> _saveCache(String classification, List<dynamic> projects) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(classification, json.encode(projects));
   }
 
   List<dynamic> _filterProjects(List<dynamic> projects) {
@@ -208,14 +233,68 @@ class _ParticipantesPageState extends State<ParticipantesPage> {
   }
 }
 
-class CardWidget2 extends StatelessWidget {
+class CardWidget2 extends StatefulWidget {
   final Map<String, dynamic> project;
   final String classification;
 
-  const CardWidget2(
-      {super.key, required this.project, required this.classification});
+  const CardWidget2({
+    super.key,
+    required this.project,
+    required this.classification,
+  });
 
-  Color Cor(String classification) {
+  @override
+  _CardWidget2State createState() => _CardWidget2State();
+}
+
+class _CardWidget2State extends State<CardWidget2>
+    with TickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<ImageProvider> _loadImage(String url) async {
+    final httpClient = IOClient(
+        HttpClient()..badCertificateCallback = (cert, host, port) => true);
+
+    final response = await httpClient.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      return MemoryImage(response.bodyBytes);
+    } else {
+      print('Erro ao carregar imagem: ${response.statusCode}');
+      return const AssetImage('lib/assets/Rectangle.png');
+    }
+  }
+
+  String _shortenText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      return '${text.substring(0, maxLength)}...';
+    }
+  }
+
+  Color _getCardColor(String classification) {
     switch (classification) {
       case 'ETEC':
         return const Color(0xFF830000);
@@ -232,10 +311,10 @@ class CardWidget2 extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
-    final String? bannerUrl = project['banner'];
+    final String? bannerUrl = widget.project['banner'];
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    final List<dynamic>? exhibitors = project['exhibitors'];
+    final List<dynamic>? exhibitors = widget.project['exhibitors'];
     String institutionName = '';
 
     if (exhibitors != null && exhibitors.isNotEmpty) {
@@ -248,78 +327,94 @@ class CardWidget2 extends StatelessWidget {
       }
     }
 
-    return Padding(
-      padding: EdgeInsets.all(screenWidth * 0.015),
-      child: InkWell(
-        onTap: () {
+    return GestureDetector(
+        onTap: () async {
+          await _controller.forward();
+          await _controller.reverse();
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetalheProjectPage(project: project),
+              builder: (context) => DetalheProjectPage(project: widget.project),
             ),
           );
         },
-        child: Card(
-          color: Cor(classification),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: SizedBox(
-            width: screenWidth * 0.5,
-            height: screenWidth * 0.65,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 10.0),
-                if (bannerUrl != null && bannerUrl.isNotEmpty)
-                  Container(
-                    height: screenHeight * 0.15,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: themeProvider.getBorderColor(),
-                        width: 2.5,
+        child: ScaleTransition(
+          scale: _animation,
+          child: Padding(
+            padding: EdgeInsets.all(screenWidth * 0.015),
+            child: Card(
+              color: _getCardColor(widget.classification),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: SizedBox(
+                width: screenWidth * 0.5,
+                height: screenWidth * 0.65,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 10.0),
+                    if (bannerUrl != null && bannerUrl.isNotEmpty)
+                      FutureBuilder<ImageProvider>(
+                        future: _loadImage(bannerUrl),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container(
+                              height: screenHeight * 0.15,
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Image.asset(
+                              'lib/assets/Rectangle.png',
+                              width: screenWidth * 0.42,
+                            );
+                          } else {
+                            return Container(
+                              height: screenHeight * 0.15,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                color: themeProvider.getBorderColor(),
+                                width: 2.5,
+                              )),
+                              child: Image(
+                                image: snapshot.data ??
+                                    AssetImage('lib/assets/Rectangle.png'),
+                                width: screenWidth * 0.42,
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          }
+                        },
+                      )
+                    else
+                      Image.asset(
+                        'lib/assets/Rectangle.png',
+                        width: screenWidth * 0.42,
                       ),
+                    const SizedBox(height: 5.0),
+                    Text(
+                      _shortenText(widget.project['name_project'], 25),
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.042,
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    child: Image.network(
-                      bannerUrl,
-                      width: screenWidth * 0.42,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'lib/assets/Rectangle.png',
-                          width: screenWidth * 0.42,
-                        );
-                      },
-                    ),
-                  )
-                else
-                  Image.asset(
-                    'lib/assets/Rectangle.png',
-                    width: screenWidth * 0.42,
-                  ),
-                const SizedBox(height: 5.0),
-                Text(
-                  _shortenText(project['name_project'], 25),
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: screenWidth * 0.042,
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                  textAlign: TextAlign.center,
+                    const SizedBox(height: 3.0),
+                    Text(_shortenText(institutionName, 45),
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.035,
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                        ),
+                        textAlign: TextAlign.center),
+                  ],
                 ),
-                const SizedBox(height: 3.0),
-                Text(_shortenText(institutionName, 45),
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.035,
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                    ),
-                    textAlign: TextAlign.center),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
 

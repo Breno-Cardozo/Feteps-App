@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:feteps/MeusDados_page.dart';
 import 'package:feteps/appbar/appbar1_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/io_client.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -67,8 +69,12 @@ class _PerfilPageState extends State<PerfilPage> {
     String url =
         GlobalPageState.Url + '/appfeteps/pages/Users/getUserById.php?id=$id';
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     try {
-      final response = await http.get(
+      final response = await client.get(
         Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $tokenLogado',
@@ -88,6 +94,7 @@ class _PerfilPageState extends State<PerfilPage> {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
     } finally {
       setState(() {
         isLoading = false;
@@ -155,6 +162,10 @@ class _PerfilPageState extends State<PerfilPage> {
   Widget _buildUserInfo(double screenHeight, double screenWidth) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     double fontSize = screenWidth * 0.065;
+    String displayedNomeUsuario = nomeUsuario.length > 20
+        ? '${nomeUsuario.substring(0, 16)}...'
+        : nomeUsuario;
+
     if (nomeUsuario.length > 15) {
       int excessLength = nomeUsuario.length - 15;
       double reductionFactor = 0.005 * excessLength;
@@ -162,16 +173,28 @@ class _PerfilPageState extends State<PerfilPage> {
     }
 
     return SizedBox(
-      height: screenHeight * 0.18,
+      height: screenHeight * 0.15,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: screenWidth * 0.06),
-            child: SvgPicture.network(
-              'https://api.dicebear.com/9.x/bottts/svg?seed=$nomeUsuario',
-              height: screenWidth * 0.3,
-              width: screenWidth * 0.3,
-              placeholderBuilder: (context) => CircularProgressIndicator(),
+            padding: EdgeInsets.only(left: screenWidth * 0.025),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: themeProvider.getSpecialColor2(),
+                  width: 1,
+                ),
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'lib/assets/user2.png',
+                  height: screenHeight * 0.14,
+                  width: screenWidth * 0.3,
+                ),
+              ),
             ),
           ),
           Column(
@@ -191,7 +214,7 @@ class _PerfilPageState extends State<PerfilPage> {
                         ),
                       ),
                       TextSpan(
-                        text: nomeUsuario,
+                        text: displayedNomeUsuario,
                         style: GoogleFonts.poppins(
                           fontSize: fontSize,
                           color: const Color(0xFFD4A03D),
@@ -213,7 +236,7 @@ class _PerfilPageState extends State<PerfilPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Padding(
       padding: EdgeInsets.only(
-          left: screenWidth * 0.06, bottom: screenHeight * 0.05),
+          left: screenWidth * 0.06, bottom: screenHeight * 0.035),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -349,7 +372,7 @@ class _PerfilPageState extends State<PerfilPage> {
         top: screenHeight * 0.015,
       ),
       child: GestureDetector(
-        onTap: _logout,
+        onTap: Sair,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
@@ -379,7 +402,7 @@ class _PerfilPageState extends State<PerfilPage> {
 
   Widget _buildDocumentsImage(double screenWidth, double screenHeight) {
     return Padding(
-      padding: EdgeInsets.only(top: screenHeight * 0.02),
+      padding: EdgeInsets.only(top: screenHeight * 0.01),
       child: Image.asset(
         'lib/assets/documentos.png',
         width: screenWidth * 0.5,
@@ -394,7 +417,7 @@ class _PerfilPageState extends State<PerfilPage> {
         showPrivacyPolicy();
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+        padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
         child: Text(
           'Política de Privacidade',
           style: GoogleFonts.poppins(
@@ -430,6 +453,63 @@ class _PerfilPageState extends State<PerfilPage> {
                 "Fechar",
                 style: TextStyle(
                   color: Color(0xFF0E414F),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void Sair() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Color.fromARGB(255, 199, 199, 199),
+          title: Center(
+              child: Text(
+            "Aviso!",
+            style: GoogleFonts.poppins(color: const Color(0xFFB6382B)),
+          )),
+          content: Container(
+            height: MediaQuery.of(context).size.height * 0.08,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.64,
+                      child: Text(
+                        'Essa ação irá te desconectar do aplicativo, deseja prosseguir?',
+                        style: GoogleFonts.roboto(
+                          color: Colors.black,
+                          fontSize: MediaQuery.of(context).size.width * 0.04,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+          actions: [
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  _logout();
+                },
+                child: Text(
+                  "Confirmar",
+                  style: TextStyle(
+                      color: const Color(0xFFB6382B),
+                      fontSize: MediaQuery.of(context).size.width * 0.05,
+                      decoration: TextDecoration.underline,
+                      decorationColor: const Color(0xFFB6382B),
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),

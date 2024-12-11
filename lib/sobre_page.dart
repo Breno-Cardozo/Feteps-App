@@ -1,14 +1,13 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
-import 'package:feteps/participantes_page.dart';
-import 'package:feteps/Menu_Page.dart';
-import 'package:feteps/sobrenos_page.dart';
-import 'package:feteps/telainicial_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:feteps/Mascote_page.dart';
+import 'package:feteps/Menu_Page.dart';
+import 'package:feteps/patrocinadores_page.dart';
+import 'package:feteps/projetos_page.dart';
 import 'package:feteps/Temas/theme_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SobrePage extends StatefulWidget {
   const SobrePage({super.key});
@@ -17,17 +16,73 @@ class SobrePage extends StatefulWidget {
   State<SobrePage> createState() => _SobrePageState();
 }
 
-class _SobrePageState extends State<SobrePage> {
-  bool _isExpanded = false;
+class _SobrePageState extends State<SobrePage> with TickerProviderStateMixin {
+  late final List<AnimationController> _controllers;
+  late final List<Animation<double>> _animations;
 
-  final String _fullText =
-      'A Feteps é um evento que reúne projetos desenvolvidos por alunos do Centro Paula Souza e outras instituições participantes. Com projetos inovadores, de transformação social, tecnológicos e criativos. A diversidade e a qualidade dos trabalhos demonstram a excelência dos projetos pedagógicos do ensino médio, cursos técnicos de nível médio e superior tecnológico. A Feteps tem como objetivo desenvolver a visão empreendedora, criativa, inovadora e científico-tecnológica dos alunos. Nível médio e superior tecnológico. A Feteps tem como objetivo desenvolver a visão empreendedora, criativa, inovadora e científico-tecnológica dos alunos.\n\n'
-      'CENTRO PAULA SOUZA\n\n'
-      'O Centro Paula Souza (CPS) é uma autarquia do Governo do Estado de São Paulo, vinculada à Secretaria de Ciência, Tecnologia e Inovação. Presente em 363 municípios, a instituição administra 227 Escolas Técnicas (Etecs) e 77 Faculdades de Tecnologia (Fatecs) estaduais, com mais de 316 mil alunos em cursos técnicos de nível médio e superior tecnológicos.\n\n'
-      'A instituição também é reconhecida como Instituto de Ciência e Tecnologia (ICT), uma organização sem fins lucrativos de administrações públicas ou privadas, que tem como principal objetivo a criação e o incentivo a pesquisas científicas e tecnológicas.\n\n'
-      'ETEC E FATEC\n\n'
-      'Nas Etecs, mais de 226 mil estudantes estão matriculados nos Ensinos Médio, Técnico integrado ao Médio e no Ensino Técnico, incluindo habilitações nas modalidades presencial, semipresencial, online, Educação de Jovens e Adultos (EJA) e especialização técnica. As Etecs oferecem 224 cursos, voltados a todos os setores produtivos públicos e privados.\n\n'
-      'Já as Fatecs atendem mais de 96 mil alunos matriculados em 86 cursos de graduação tecnológica, em diversas áreas, como Construção Civil, Mecânica, Informática, Tecnologia da Informação, Turismo, entre outras.';
+  @override
+  void initState() {
+    super.initState();
+
+    // Inicializa os controladores e animações para cada imagem
+    _controllers = List.generate(4, (index) {
+      return AnimationController(
+        duration: const Duration(milliseconds: 200),
+        vsync: this,
+      );
+    });
+
+    _animations = _controllers.map((controller) {
+      return Tween<double>(begin: 1.0, end: 0.9).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+      );
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    // Dispose de todos os controladores
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onImageTap(int index) async {
+    await Future.delayed(const Duration(milliseconds: 0));
+    switch (index) {
+      case 0:
+        _launchURL('http://feteps.cpscetec.com.br/feteps.php');
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+              child: const ProjetosHomePage(),
+              type: PageTransitionType.size,
+              alignment: Alignment.center),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+              child: const PatrocinadoresPage(),
+              type: PageTransitionType.size,
+              alignment: Alignment.center),
+        );
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+              child: MascotePage(),
+              type: PageTransitionType.size,
+              alignment: Alignment.center),
+        );
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +90,7 @@ class _SobrePageState extends State<SobrePage> {
     double screenHeight = MediaQuery.of(context).size.height;
     final themeProvider = Provider.of<ThemeProvider>(context);
     String logoAsset = themeProvider.getLogoAsset();
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -75,123 +131,34 @@ class _SobrePageState extends State<SobrePage> {
           ],
         ),
         endDrawer: MenuPage(),
-        body: Column(
+        body: ListView(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.3,
-              child: Row(
-                children: [
-                  Image.asset(
-                    'lib/assets/banner2.png',
-                    width: MediaQuery.of(context).size.width * 1.0,
-                  )
-                ],
-              ),
-            ),
-            TabBar(
-              indicatorColor: const Color(0xFFFFD35F),
-              labelColor: themeProvider.getSpecialColor3(),
-              labelStyle: GoogleFonts.poppins(
-                fontSize: MediaQuery.of(context).size.width * 0.043,
-              ),
-              tabs: const [
-                Tab(text: 'Feteps'),
-                Tab(text: 'Programação'),
+            Column(
+              children: [
+                SizedBox(
+                  height: screenHeight * 0.03,
+                ),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner2.png', screenWidth, 0),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner1.png', screenWidth, 1),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner3.png', screenWidth, 2),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                _buildImageWithBorder(
+                    context, 'lib/assets/banners/banner4.png', screenWidth, 3),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
               ],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: screenHeight * 0.04,
-                            ),
-                            child: Image.asset(
-                              'lib/assets/alunos.png',
-                              width: screenWidth * 0.65,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                  ),
-                                  child: Text(
-                                    _isExpanded
-                                        ? _fullText
-                                        : _fullText.substring(0, 636) + '...',
-                                    style: GoogleFonts.poppins(
-                                        fontSize:
-                                            MediaQuery.of(context).size.width *
-                                                0.04,
-                                        color:
-                                            themeProvider.getSpecialColor3()),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isExpanded = !_isExpanded;
-                                  });
-                                },
-                                child: Text(
-                                  _isExpanded ? "Leia Menos" : "Leia Mais",
-                                  style: GoogleFonts.poppins(
-                                    fontSize:
-                                        MediaQuery.of(context).size.width *
-                                            0.045,
-                                    color: const Color(0xFFB6382B),
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: const Color(0xFFB6382B),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
-                  ), // Conteúdo da primeira guia
-                  ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Column(children: [
-                        Padding(
-                          padding: EdgeInsets.all(screenWidth * 0.025),
-                          child: const EventTable(),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'lib/assets/calendario.png',
-                              width: MediaQuery.of(context).size.width * 0.55,
-                            )
-                          ],
-                        ),
-                      ]),
-                    ],
-                  ), // Conteúdo da segunda guia
-                ],
-              ),
             ),
           ],
         ),
@@ -199,68 +166,45 @@ class _SobrePageState extends State<SobrePage> {
     );
   }
 
-  Future<bool> sair() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences.clear();
-    return true;
+  Widget _buildImageWithBorder(
+      BuildContext context, String imagePath, double screenWidth, int index) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return GestureDetector(
+      onTap: () async {
+        // Animação de clique
+        await _controllers[index].forward();
+        await _controllers[index].reverse();
+        _onImageTap(index);
+      },
+      child: ScaleTransition(
+        scale: _animations[index],
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            border: Border.all(
+              color: themeProvider.getSpecialColor3(),
+              width: 3.0,
+            ),
+          ),
+          child: Image.asset(
+            imagePath,
+            width: screenWidth * 0.88,
+          ),
+        ),
+      ),
+    );
   }
 }
 
-class EventTable extends StatelessWidget {
-  const EventTable({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.95,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2.5),
-        border: Border.all(color: Colors.black),
-      ),
-      child: Table(
-        columnWidths: {
-          0: const FlexColumnWidth(1),
-          1: const FlexColumnWidth(2),
-        },
-        children: [
-          _buildTableRow(
-            '10/10/2023\n25/03/2024',
-            'Submissão dos Trabalhos [Prorrogado]',
-            Color(0xFFFFD35F),
-          ),
-          _buildTableRow(
-              '22/04/2024', 'Início da Etapa de Avaliação', Colors.white),
-          _buildTableRow(
-              '15/05/2024', 'Divulgação dos Finalistas', Color(0xFFFFD35F)),
-          _buildTableRow('19, 20, 21 e 22/08/2024',
-              'Feira Presencial: São Paulo Expo - Pavilhão 7', Colors.white),
-        ],
-      ),
-    );
+Future<void> _launchURL(String url) async {
+  if (url.isEmpty) {
+    print('URL is empty');
+    return;
   }
 
-  TableRow _buildTableRow(
-      String date, String description, Color backgroundColor) {
-    return TableRow(
-      children: [
-        Container(
-          color: backgroundColor,
-          padding: const EdgeInsets.all(20.66), // Aumenta a altura da linha
-          child: Text(
-            date,
-            style: TextStyle(
-                fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Container(
-          color: backgroundColor,
-          padding: const EdgeInsets.all(20.0), // Aumenta a altura da linha
-          child: Text(
-            description,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri)) {
+    print('Could not launch $url');
   }
 }

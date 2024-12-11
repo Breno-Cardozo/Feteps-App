@@ -3,6 +3,7 @@ import 'package:feteps/NossaEquipe/Breno_page.dart';
 import 'package:feteps/NossaEquipe/Caetano_page.dart';
 import 'package:feteps/NossaEquipe/Cintia_page.dart';
 import 'package:feteps/NossaEquipe/Anderson_page.dart';
+import 'package:feteps/NossaEquipe/Gustavo_page.dart';
 import 'package:feteps/NossaEquipe/Krebs_page.dart';
 import 'package:feteps/NossaEquipe/Lele_page.dart';
 import 'package:feteps/NossaEquipe/Luana_page.dart';
@@ -13,6 +14,7 @@ import 'package:feteps/NossaEquipe/Gabriel_page.dart';
 import 'package:feteps/NossaEquipe/Richard_page.dart';
 import 'package:feteps/sobrenos_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +66,7 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
 
   final List<Map<String, String>> desenvolvimentoMobile = [
     {
-      "name": "Breno Cardozo",
+      "name": "Breno",
       "image": "lib/assets/equipe/breno.png",
       "page": "BrenoCardozoPage"
     },
@@ -100,6 +102,11 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
       "name": "Andrey",
       "image": "lib/assets/equipe/andrey.png",
       "page": "AndreyPage"
+    },
+    {
+      "name": "Gustavo",
+      "image": "lib/assets/equipe/Gustavo.png",
+      "page": "GustavoPage"
     }
   ];
 
@@ -132,22 +139,34 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                onPressed: () {
+              WillPopScope(
+                onWillPop: () async {
                   Navigator.pushReplacement(
                     context,
                     PageTransition(
-                      child: const SobreNosPage(),
-                      type: PageTransitionType.bottomToTop,
-                    ),
+                        child: SobreNosPage(),
+                        type: PageTransitionType.size,
+                        alignment: Alignment.center),
                   );
+                  return false;
                 },
-                icon: Padding(
-                  padding: const EdgeInsets.only(bottom: 8, right: 15),
-                  child: Icon(
-                    size: screenWidth * 0.075,
-                    Icons.arrow_back_sharp,
-                    color: themeProvider.getSpecialColor2(),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        child: const SobreNosPage(),
+                        type: PageTransitionType.bottomToTop,
+                      ),
+                    );
+                  },
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: 8, right: 15),
+                    child: Icon(
+                      size: screenWidth * 0.075,
+                      Icons.arrow_back_sharp,
+                      color: themeProvider.getSpecialColor2(),
+                    ),
                   ),
                 ),
               ),
@@ -239,7 +258,13 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
                 ? MainAxisAlignment.center
                 : MainAxisAlignment.start,
             children: List.generate(teamMembers.length, (index) {
-              return _buildCard(teamMembers[index], color);
+              return _AnimatedCard(
+                member: teamMembers[index],
+                borderColor: color,
+                onTap: (page) {
+                  _navigateToPage(page, context);
+                },
+              );
             }),
           ),
         ),
@@ -301,47 +326,99 @@ class _NossaEquipePageState extends State<NossaEquipePage> {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const GabrielPage()));
         break;
+      case 'GustavoPage':
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const GustavoPage()));
+        break;
     }
   }
+}
 
-  Widget _buildCard(Map<String, String> member, Color borderColor) {
+class _AnimatedCard extends StatefulWidget {
+  final Map<String, String> member;
+  final Color borderColor;
+  final Function(String) onTap;
+
+  const _AnimatedCard({
+    required this.member,
+    required this.borderColor,
+    required this.onTap,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  __AnimatedCardState createState() => __AnimatedCardState();
+}
+
+class __AnimatedCardState extends State<_AnimatedCard>
+    with TickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return GestureDetector(
-      onTap: () {
-        _navigateToPage(member['page']!, context);
+      onTap: () async {
+        await _controller.forward();
+        await _controller.reverse();
+        widget.onTap(widget.member['page']!);
       },
-      child: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.0125),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: borderColor, width: 13),
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: SizedBox(
-            width: screenWidth * 0.5,
-            height: screenHeight * 0.3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.07),
-                  child: Image.asset(
-                    member['image']!,
-                    width: screenWidth * 0.5,
-                    height: screenHeight * 0.16,
+      child: ScaleTransition(
+        scale: _animation,
+        child: Padding(
+          padding: EdgeInsets.all(screenWidth * 0.0125),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color: widget.borderColor, width: 13),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: SizedBox(
+              width: screenWidth * 0.5,
+              height: screenHeight * 0.3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(screenWidth * 0.07),
+                    child: Image.asset(
+                      widget.member['image']!,
+                      width: screenWidth * 0.5,
+                      height: screenHeight * 0.16,
+                    ),
                   ),
-                ),
-                Text(
-                  member['name']!,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: screenWidth * 0.05,
-                    color: Colors.black,
+                  Text(
+                    widget.member['name']!,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: screenWidth * 0.05,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

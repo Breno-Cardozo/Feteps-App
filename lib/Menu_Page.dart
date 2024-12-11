@@ -3,7 +3,7 @@ import 'package:feteps/sobre_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:feteps/Temas/theme_provider.dart';
-import 'package:feteps/avaliar_page.dart';
+import 'package:feteps/Mascote_page.dart';
 import 'package:feteps/curiosidades_page.dart';
 import 'package:feteps/participantes_page.dart';
 import 'package:feteps/mapa_page.dart';
@@ -41,7 +41,9 @@ class _MenuPageState extends State<MenuPage> {
     'Muito escuro? Clique aqui para alterar o tema',
     'Os palestrantes de hj são Incriveis!',
     'Confira nossos apoiadores',
-    'Nossa equipe fez o melhor app para vc!'
+    'Nossa equipe fez o melhor app para vc!',
+    'Não esqueça de votar nos projetos!',
+    'Confira a aba "Sobre" para conhcer nossa equipe'
   ];
 
   @override
@@ -93,13 +95,8 @@ class _MenuPageState extends State<MenuPage> {
                                           top: screenHeight * 0.015),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF0E414F),
+                                          color: Colors.transparent,
                                           shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color:
-                                                themeProvider.getBorderColor(),
-                                            width: 3,
-                                          ),
                                         ),
                                         child: ClipOval(
                                           child: SvgPicture.network(
@@ -115,8 +112,8 @@ class _MenuPageState extends State<MenuPage> {
                                 ],
                               ),
                               Positioned(
-                                bottom: screenHeight * 0.04,
-                                right: screenWidth * 0.3,
+                                bottom: screenHeight * 0.03,
+                                right: screenWidth * 0.25,
                                 child: Container(
                                   width: screenWidth * 0.3,
                                   padding: EdgeInsets.all(screenWidth * 0.02),
@@ -219,19 +216,33 @@ class _MenuPageState extends State<MenuPage> {
                     context: context,
                   ),
                   _buildDrawerItem(
-                    icon: Icons.thumb_up,
-                    text: 'Avaliações',
+                    icon: Icons.android,
+                    text: 'Mascote',
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
                         PageTransition(
-                          child: AvaliacaoPage(),
+                          child: MascotePage(),
                           type: PageTransitionType.fade,
                         ),
                       );
                     },
                     context: context,
                   ),
+                  // _buildDrawerItem(
+                  //   icon: Icons.thumb_up,
+                  //   text: 'Avaliações',
+                  //   onTap: () {
+                  //     Navigator.pushReplacement(
+                  //       context,
+                  //       PageTransition(
+                  //         child: AvaliacaoPage(),
+                  //         type: PageTransitionType.fade,
+                  //       ),
+                  //     );
+                  //   },
+                  //   context: context,
+                  // ),
                   _buildDrawerItem(
                     icon: Icons.place,
                     text: 'Mapa',

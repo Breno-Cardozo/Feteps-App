@@ -68,12 +68,24 @@ class ThemeProvider with ChangeNotifier {
         : Colors.white;
   }
 
+  Color getSpecialColor21() {
+    return _themeMode == ThemeMode.light
+        ? Colors.white
+        : const Color(0xFF0E414F);
+  }
+
   Color getSpecialColor3() {
     return _themeMode == ThemeMode.light ? Colors.black : Colors.white;
   }
 
   Color getSpecialColor4() {
-    return _themeMode == ThemeMode.light ? Colors.white : Colors.black;
+    return _themeMode == ThemeMode.light
+        ? Colors.white
+        : Color.fromARGB(255, 27, 27, 27);
+  }
+
+  Color getSpecialColor5() {
+    return _themeMode == ThemeMode.light ? Colors.white : Colors.grey;
   }
 }
 
@@ -82,7 +94,7 @@ final ThemeData lightTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: AppBarTheme(
     backgroundColor: Colors.white,
-    foregroundColor: Colors.black,
+    foregroundColor: Color.fromARGB(255, 27, 27, 27),
   ),
   textTheme: TextTheme(
     bodyLarge: TextStyle(color: Colors.black),
@@ -97,10 +109,10 @@ final ThemeData lightTheme = ThemeData(
 );
 
 final ThemeData darkTheme = ThemeData(
-  primaryColor: Colors.black,
-  scaffoldBackgroundColor: Colors.black,
+  primaryColor: Color.fromARGB(255, 27, 27, 27),
+  scaffoldBackgroundColor: Color.fromARGB(255, 27, 27, 27),
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.black,
+    backgroundColor: Color.fromARGB(255, 27, 27, 27),
     foregroundColor: Colors.white,
   ),
   textTheme: TextTheme(

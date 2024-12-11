@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:feteps/appbar/appbar2_page.dart';
 import 'package:feteps/atualizaperfil_page.dart';
 import 'package:feteps/global.dart';
@@ -6,6 +9,7 @@ import 'package:feteps/loginfeteps_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterflow_ui/flutterflow_ui.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,11 +31,13 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
   final _institutionCodeController = TextEditingController();
   final _idController = TextEditingController();
   final _emailController = TextEditingController();
+  final _dataController = TextEditingController();
   String idUsuario = '';
   String nomeUsuario = '';
   String email = '';
   String estado = '';
   String cidade = '';
+  String registro = '';
   String institutionid = '';
   String tokenLogado = '';
   bool isLoading = false;
@@ -73,8 +79,12 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
     String url =
         GlobalPageState.Url + '/appfeteps/pages/Users/getUserById.php?id=$id';
 
+    final client = IOClient(HttpClient()
+      ..badCertificateCallback =
+          (cert, host, port) => true); // ignore certificate verification
+
     try {
-      final response = await http.get(
+      final response = await client.get(
         Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $tokenLogado',
@@ -85,13 +95,17 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
         final data = jsonDecode(response.body);
         setState(() {
           userData = data;
-          institutionid = data['institution']?['id'].toString() ?? 'No id';
+          registro = data['registerDate']?.toString() ?? 'Data não encontrada';
 
-          _institutionCodeController.text = institutionid;
+          _institutionCodeController.text =
+              data['institution']?['id']?.toString() ?? '';
+          _dataController.text = registro;
         });
       } else {
         throw Exception('Failed to load user data');
       }
+    } catch (e) {
+      print('Erro ao carregar dados do usuário: $e');
     } finally {
       setState(() {
         isLoading = false;
@@ -104,7 +118,7 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context);
-    
+
     return Scaffold(
       appBar: AppBar2_page(
           screenWidth: screenWidth, destinationPage: const PerfilPage()),
@@ -141,7 +155,7 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
               ),
               buildTextField(
                 context,
-                labelText: 'Nome de usuário:',
+                labelText: 'Nome do usuário:',
                 controller: _userNameController,
               ),
               buildTextField(
@@ -156,15 +170,15 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
               ),
               buildTextField(
                 context,
-                labelText: 'ID de usuário:',
-                controller: _idController,
+                labelText: 'Data de registro:',
+                controller: _dataController,
               ),
               buildTextField(
                 context,
-                labelText: 'Cod Instituição:',
+                labelText: 'Cod Instituição(Etecs/Fatecs):',
                 controller: _institutionCodeController,
               ),
-              SizedBox(height: screenHeight * 0.01),
+              SizedBox(height: screenHeight * 0.02),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -206,7 +220,7 @@ class _MeusDadosPagePageState extends State<MeusDadosPage> {
 
     return Padding(
       padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03),
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.035),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
